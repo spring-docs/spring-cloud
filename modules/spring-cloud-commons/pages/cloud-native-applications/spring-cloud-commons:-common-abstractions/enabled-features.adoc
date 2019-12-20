@@ -1,0 +1,50 @@
+include::page$attributes.adoc[]
+[[enabled-features]]
+=== Enabled Features
+
+Spring Cloud Commons provides a `/features` actuator endpoint.
+This endpoint returns features available on the classpath and whether they are enabled.
+The information returned includes the feature type, name, version, and vendor.
+
+==== Feature types
+
+There are two types of 'features': abstract and named.
+
+Abstract features are features where an interface or abstract class is defined and that an implementation the creates, such as `DiscoveryClient`, `LoadBalancerClient`, or `LockService`.
+The abstract class or interface is used to find a bean of that type in the context.
+The version displayed is `bean.getClass().getPackage().getImplementationVersion()`.
+
+Named features are features that do not have a particular class they implement. These features include "`Circuit Breaker`", "`API Gateway`", "`Spring Cloud Bus`", and others. These features require a name and a bean type.
+
+==== Declaring features
+
+Any module can declare any number of `HasFeature` beans, as the following examples show:
+
+====
+[source,java,indent=0]
+----
+@Bean
+public HasFeatures commonsFeatures() {
+  return HasFeatures.abstractFeatures(DiscoveryClient.class, LoadBalancerClient.class);
+}
+
+@Bean
+public HasFeatures consulFeatures() {
+  return HasFeatures.namedFeatures(
+    new NamedFeature("Spring Cloud Bus", ConsulBusAutoConfiguration.class),
+    new NamedFeature("Circuit Breaker", HystrixCommandAspect.class));
+}
+
+@Bean
+HasFeatures localFeatures() {
+  return HasFeatures.builder()
+      .abstractFeature(Something.class)
+      .namedFeature(new NamedFeature("Some Other Feature", Someother.class))
+      .abstractFeature(Somethingelse.class)
+      .build();
+}
+----
+====
+
+Each of these beans should go in an appropriately guarded `@Configuration`.
+

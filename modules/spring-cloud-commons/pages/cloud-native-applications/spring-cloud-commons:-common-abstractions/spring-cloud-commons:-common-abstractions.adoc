@@ -1,0 +1,6 @@
+include::page$attributes.adoc[]
+
+== Spring Cloud Commons: Common Abstractions
+
+Patterns such as service discovery, load balancing, and circuit breakers lend themselves to a common abstraction layer that can be consumed by all Spring Cloud clients, independent of the implementation (for example, discovery with Eureka or Consul).
+

@@ -1,0 +1,8 @@
+include::page$attributes.adoc[]
+
+=== Logging Configuration
+
+If you use Spring Boot to configure log settings, you should place this configuration in `bootstrap.[yml | properties]` if you would like it to apply to all events.
+
+NOTE: For Spring Cloud to initialize logging configuration properly, you cannot use a custom prefix.
+For example, using `custom.loggin.logpath` is not recognized by Spring Cloud when initializing the logging system.

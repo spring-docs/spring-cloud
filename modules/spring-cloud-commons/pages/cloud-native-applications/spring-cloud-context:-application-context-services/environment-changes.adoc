@@ -1,0 +1,22 @@
+include::page$attributes.adoc[]
+
+=== Environment Changes
+
+The application listens for an `EnvironmentChangeEvent` and reacts to the change in a couple of standard ways (additional `ApplicationListeners` can be added as `@Beans` in the normal way).
+When an `EnvironmentChangeEvent` is observed, it has a list of key values that have changed, and the application uses those to:
+
+* Re-bind any `@ConfigurationProperties` beans in the context.
+* Set the logger levels for any properties in `logging.level.*`.
+
+Note that the Spring Cloud Config Client does not, by default, poll for changes in the `Environment`.
+Generally, we would not recommend that approach for detecting changes (although you could set it up with a
+`@Scheduled` annotation).
+If you have a scaled-out client application, it is better to broadcast the `EnvironmentChangeEvent` to all the instances instead of having them polling for changes (for example, by using the https://github.com/spring-cloud/spring-cloud-bus[Spring Cloud Bus]).
+
+The `EnvironmentChangeEvent` covers a large class of refresh use cases, as long as you can actually make a change to the `Environment` and publish the event.
+Note that those APIs are public and part of core Spring).
+You can verify that the changes are bound to `@ConfigurationProperties` beans by visiting the `/configprops` endpoint (a standard Spring Boot Actuator feature).
+For instance, a `DataSource` can have its `maxPoolSize` changed at runtime (the default `DataSource` created by Spring Boot is a `@ConfigurationProperties` bean) and grow capacity dynamically.
+Re-binding `@ConfigurationProperties` does not cover another large class of use cases, where you need more control over the refresh and where you need a change to be atomic over the whole `ApplicationContext`.
+To address those concerns, we have `@RefreshScope`.
+

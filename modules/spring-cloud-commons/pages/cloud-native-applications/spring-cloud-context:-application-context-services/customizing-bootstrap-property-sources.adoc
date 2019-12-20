@@ -1,0 +1,36 @@
+include::page$attributes.adoc[]
+[[customizing-bootstrap-property-sources]]
+=== Customizing the Bootstrap Property Sources
+
+The default property source for external configuration added by the bootstrap process is the Spring Cloud Config Server, but you can add additional sources by adding beans of type `PropertySourceLocator` to the bootstrap context (through `spring.factories`).
+For instance, you can insert additional properties from a different server or from a database.
+
+As an example, consider the following custom locator:
+
+====
+[source,java]
+----
+@Configuration
+public class CustomPropertySourceLocator implements PropertySourceLocator {
+
+    @Override
+    public PropertySource<?> locate(Environment environment) {
+        return new MapPropertySource("customProperty",
+                Collections.<String, Object>singletonMap("property.from.sample.custom.source", "worked as intended"));
+    }
+
+}
+----
+====
+
+The `Environment` that is passed in is the one for the `ApplicationContext` about to be created -- in other words, the one for which we supply additional property sources.
+It already has its normal Spring Boot-provided property sources, so you can use those to locate a property source specific to this `Environment` (for example, by keying it on `spring.application.name`, as is done in the default Spring Cloud Config Server property source locator).
+
+If you create a jar with this class in it and then add a `META-INF/spring.factories` containing the following setting, the `customProperty` `PropertySource` appears in any application that includes that jar on its classpath:
+
+====
+[source]
+----
+org.springframework.cloud.bootstrap.BootstrapConfiguration=sample.custom.CustomPropertySourceLocator
+----
+====

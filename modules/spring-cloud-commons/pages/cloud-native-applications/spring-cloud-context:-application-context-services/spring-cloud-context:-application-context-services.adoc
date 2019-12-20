@@ -1,0 +1,7 @@
+include::page$attributes.adoc[]
+
+== Spring Cloud Context: Application Context Services
+
+Spring Boot has an opinionated view of how to build an application with Spring.
+For instance, it has conventional locations for common configuration files and has endpoints for common management and monitoring tasks.
+Spring Cloud builds on top of that and adds a few features that many components in a system would use or occasionally need.

@@ -1,0 +1,48 @@
+include::page$attributes.adoc[]
+
+=== Multiple `RestTemplate` Objects
+
+If you want a `RestTemplate` that is not load-balanced, create a `RestTemplate` bean and inject it.
+To access the load-balanced `RestTemplate`, use the `@LoadBalanced` qualifier when you create your `@Bean`, as the following example shows:
+
+====
+[source,java,indent=0]
+----
+@Configuration
+public class MyConfiguration {
+
+    @LoadBalanced
+    @Bean
+    RestTemplate loadBalanced() {
+        return new RestTemplate();
+    }
+
+    @Primary
+    @Bean
+    RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
+}
+
+public class MyClass {
+@Autowired
+private RestTemplate restTemplate;
+
+    @Autowired
+    @LoadBalanced
+    private RestTemplate loadBalanced;
+
+    public String doOtherStuff() {
+        return loadBalanced.getForObject("http://stores/stores", String.class);
+    }
+
+    public String doStuff() {
+        return restTemplate.getForObject("http://example.com", String.class);
+    }
+}
+----
+====
+
+IMPORTANT: Notice the use of the `@Primary` annotation on the plain `RestTemplate` declaration in the preceding example to disambiguate the unqualified `@Autowired` injection.
+
+TIP: If you see errors such as `java.lang.IllegalArgumentException: Can not set org.springframework.web.client.RestTemplate field com.my.app.Foo.restTemplate to com.sun.proxy.$Proxy89`, try injecting `RestOperations` or setting `spring.aop.proxyTargetClass=true`.

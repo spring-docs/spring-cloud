@@ -1,0 +1,47 @@
+include::page$attributes.adoc[]
+
+=== Multiple WebClient Objects
+
+If you want a `WebClient` that is not load-balanced, create a `WebClient` bean and inject it.
+To access the load-balanced `WebClient`, use the `@LoadBalanced` qualifier when you create your `@Bean`, as the following example shows:
+
+====
+[source,java,indent=0]
+----
+@Configuration
+public class MyConfiguration {
+
+    @LoadBalanced
+    @Bean
+    WebClient.Builder loadBalanced() {
+        return WebClient.builder();
+    }
+
+    @Primary
+    @Bean
+    WebClient.Builder webClient() {
+        return WebClient.builder();
+    }
+}
+
+public class MyClass {
+    @Autowired
+    private WebClient.Builder webClientBuilder;
+
+    @Autowired
+    @LoadBalanced
+    private WebClient.Builder loadBalanced;
+
+    public Mono<String> doOtherStuff() {
+        return loadBalanced.build().get().uri("http://stores/stores")
+        				.retrieve().bodyToMono(String.class);
+    }
+
+    public Mono<String> doStuff() {
+        return webClientBuilder.build().get().uri("http://example.com")
+        				.retrieve().bodyToMono(String.class);
+    }
+}
+----
+====
+

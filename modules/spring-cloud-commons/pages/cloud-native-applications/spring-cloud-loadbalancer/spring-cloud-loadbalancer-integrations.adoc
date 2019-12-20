@@ -1,0 +1,11 @@
+include::page$attributes.adoc[]
+
+=== Spring Cloud LoadBalancer integrations
+
+In order to make it easy to use Spring Cloud LoadBalancer, we provide `ReactorLoadBalancerExchangeFilterFunction` that can be used with `WebClient` and `BlockingLoadBalancerClient` that works with `RestTemplate`.
+You can see more information and examples of usage in the following sections:
+
+* xref:spring-cloud-commons:-common-abstractions:rest-template-loadbalancer-client.adoc#rest-template-loadbalancer-client[Spring RestTemplate as a Load Balancer Client]
+* xref:spring-cloud-commons:-common-abstractions:webclinet-loadbalancer-client.adoc#webclinet-loadbalancer-client[Spring WebClient as a Load Balancer Client]
+* xref:spring-cloud-commons:-common-abstractions:loadbalanced-webclient.adoc#webflux-with-reactive-loadbalancer[Spring WebFlux WebClient with `ReactorLoadBalancerExchangeFilterFunction`]
+

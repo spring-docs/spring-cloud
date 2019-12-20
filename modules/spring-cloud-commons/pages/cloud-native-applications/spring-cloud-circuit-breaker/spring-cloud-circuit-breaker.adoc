@@ -1,0 +1,3 @@
+include::page$attributes.adoc[]
+
+== Spring Cloud Circuit Breaker

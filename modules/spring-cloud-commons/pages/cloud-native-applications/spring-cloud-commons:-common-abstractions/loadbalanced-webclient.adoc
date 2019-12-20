@@ -1,0 +1,82 @@
+include::page$attributes.adoc[]
+[[loadbalanced-webclient]]
+=== Spring WebFlux `WebClient` as a Load Balancer Client
+
+The Spring WebFlux can work with both reactive and non-reactive `WebClient` configurations, as the topics describe:
+
+* xref:spring-cloud-commons:-common-abstractions:loadbalanced-webclient.adoc#webflux-with-reactive-loadbalancer[webflux-with-reactive-loadbalancer]
+* <<load-balancer-exchange-filter-functionload-balancer-exchange-filter-function>>
+
+[[webflux-with-reactive-loadbalancer]]
+==== Spring WebFlux `WebClient` with `ReactorLoadBalancerExchangeFilterFunction`
+
+You can configure `WebClient` to use the `ReactiveLoadBalancer`.
+If you add xref:spring-cloud-loadbalancer:spring-cloud-loadbalancer-starter.adoc#spring-cloud-loadbalancer-starter[Spring Cloud LoadBalancer starter] to your project
+and if `spring-webflux` is on the classpath, `ReactorLoadBalancerExchangeFilterFunction` is auto-configured.
+The following example shows how to configure a `WebClient` to use reactive load-balancer:
+
+====
+[source,java,indent=0]
+----
+public class MyClass {
+    @Autowired
+    private ReactorLoadBalancerExchangeFilterFunction lbFunction;
+
+    public Mono<String> doOtherStuff() {
+        return WebClient.builder().baseUrl("http://stores")
+            .filter(lbFunction)
+            .build()
+            .get()
+            .uri("/stores")
+            .retrieve()
+            .bodyToMono(String.class);
+    }
+}
+----
+====
+
+The URI needs to use a virtual host name (that is, a service name, not a host name).
+The `ReactorLoadBalancer` is used to create a full physical address.
+
+NOTE: By default, if you have `spring-cloud-netflix-ribbon` in your classpath, xref:spring-cloud-commons:-common-abstractions:loadbalanced-webclient.adoc#load-balancer-exchange-filter-function[`LoadBalancerExchangeFilterFunction`]
+is used to maintain backward compatibility. To use
+`ReactorLoadBalancerExchangeFilterFunction`, set the `spring.cloud.loadbalancer.ribbon.enabled` property
+to `false`.
+
+[[load-balancer-exchange-filter-function]]
+==== Spring WebFlux `WebClient` with a Non-reactive Load Balancer Client
+
+If you you do not have xref:spring-cloud-loadbalancer:spring-cloud-loadbalancer-starter.adoc#spring-cloud-loadbalancer-starter[Spring Cloud LoadBalancer starter] in your project
+but you do have spring-cloud-starter-netflix-ribbon, you can still use `WebClient` with `LoadBalancerClient`.
+If `spring-webflux` is on the classpath, `LoadBalancerExchangeFilterFunction`
+is auto-configured. Note, however, that this
+uses a non-reactive client under the hood.
+The following example shows how to configure a `WebClient` to use load-balancer:
+
+====
+[source,java,indent=0]
+----
+public class MyClass {
+    @Autowired
+    private LoadBalancerExchangeFilterFunction lbFunction;
+
+    public Mono<String> doOtherStuff() {
+        return WebClient.builder().baseUrl("http://stores")
+            .filter(lbFunction)
+            .build()
+            .get()
+            .uri("/stores")
+            .retrieve()
+            .bodyToMono(String.class);
+    }
+}
+----
+====
+
+The URI needs to use a virtual host name (that is, a service name, not a host name).
+The `LoadBalancerClient` is used to create a full physical address.
+
+WARN: This approach is now deprecated.
+We suggest that you use xref:spring-cloud-commons:-common-abstractions:loadbalanced-webclient.adoc#webflux-with-reactive-loadbalancer[WebFlux with reactive Load-Balancer]
+instead.
+

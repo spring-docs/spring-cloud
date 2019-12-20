@@ -1,0 +1,46 @@
+include::page$attributes.adoc[]
+[[custom-loadbalancer-configuration]]
+=== Passing Your Own Spring Cloud LoadBalancer Configuration
+
+You can also use the `@LoadBalancerClient` annotation to pass your own load-balancer client configuration, passing the name of the load-balancer client and the configuration class, as follows:
+
+====
+[source,java,indent=0]
+----
+@Configuration
+@LoadBalancerClient(value = "stores", configuration = CustomLoadBalancerConfiguration.class)
+public class MyConfiguration {
+
+	@Bean
+	@LoadBalanced
+	public WebClient.Builder loadBalancedWebClientBuilder() {
+		return WebClient.builder();
+	}
+}
+----
+====
+
+You can use this feature to instantiate different implementations of `ServiceInstanceListSupplier` or `ReactorLoadBalancer`,
+either written by you, or provided by us as alternatives (for example `ZonePreferenceServiceInstanceListSupplier`) to override the default setup.
+
+You can see an example of a custom cofiguration xref:spring-cloud-loadbalancer:zone-based-load-balancing.adoc#zoned-based-custom-loadbalancer-configuration[here].
+
+NOTE: The annotation `value` arguments (`stores` in the example above) specifies the service id of the service that we should send the requests to with the given custom configuration.
+
+You can also pass multiple configurations (for more than one load-balancer client) through the `@LoadBalancerClients` annotation, as the following example shows:
+
+====
+[source,java,indent=0]
+----
+@Configuration
+@LoadBalancerClients({@LoadBalancerClient(value = "stores", configuration = StoresLoadBalancerClientConfiguration.class), @LoadBalancerClient(value = "customers", configuration = CustomersLoadBalancerClientConfiguration.class)})
+public class MyConfiguration {
+
+	@Bean
+	@LoadBalanced
+	public WebClient.Builder loadBalancedWebClientBuilder() {
+		return WebClient.builder();
+	}
+}
+----
+====

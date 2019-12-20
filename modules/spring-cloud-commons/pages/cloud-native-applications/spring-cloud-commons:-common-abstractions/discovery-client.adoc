@@ -1,0 +1,38 @@
+include::page$attributes.adoc[]
+[[discovery-client]]
+=== The `@EnableDiscoveryClient` Annotation
+
+Spring Cloud Commons provides the `@EnableDiscoveryClient` annotation.
+This looks for implementations of the `DiscoveryClient` and `ReactiveDiscoveryClient` interfaces with `META-INF/spring.factories`.
+Implementations of the discovery client add a configuration class to `spring.factories` under the `org.springframework.cloud.client.discovery.EnableDiscoveryClient` key.
+Examples of `DiscoveryClient` implementations include https://cloud.spring.io/spring-cloud-netflix/[Spring Cloud Netflix Eureka], https://cloud.spring.io/spring-cloud-consul/[Spring Cloud Consul Discovery], and https://cloud.spring.io/spring-cloud-zookeeper/[Spring Cloud Zookeeper Discovery].
+
+Spring Cloud will provide both the blocking and reactive service discovery clients by default.
+You can disable the blocking and/or reactive clients easily by setting `spring.cloud.discovery.blocking.enabled=false` or `spring.cloud.discovery.reactive.enabled=false`.
+To completely disable service discovery you just need to set `spring.cloud.discovery.enabled=false`.
+
+By default, implementations of `DiscoveryClient` auto-register the local Spring Boot server with the remote discovery server.
+This behavior can be disabled by setting `autoRegister=false` in `@EnableDiscoveryClient`.
+
+NOTE: `@EnableDiscoveryClient` is no longer required.
+You can put a `DiscoveryClient` implementation on the classpath to cause the Spring Boot application to register with the service discovery server.
+
+==== Health Indicator
+
+Commons creates a Spring Boot `HealthIndicator` that `DiscoveryClient` implementations can participate in by implementing `DiscoveryHealthIndicator`.
+To disable the composite `HealthIndicator`, set `spring.cloud.discovery.client.composite-indicator.enabled=false`.
+A generic `HealthIndicator` based on `DiscoveryClient` is auto-configured (`DiscoveryClientHealthIndicator`).
+To disable it, set `spring.cloud.discovery.client.health-indicator.enabled=false`.
+To disable the description field of the `DiscoveryClientHealthIndicator`, set `spring.cloud.discovery.client.health-indicator.include-description=false`.
+Otherwise, it can bubble up as the `description` of the rolled up `HealthIndicator`.
+
+==== Ordering `DiscoveryClient` instances
+`DiscoveryClient` interface extends `Ordered`. This is useful when using multiple discovery
+ clients, as it allows you to define the order of the returned discovery clients, similar to
+how you can order the beans loaded by a Spring application. By default, the order of any `DiscoveryClient` is set to
+`0`. If you want to set a different order for your custom `DiscoveryClient` implementations, you just need to override
+the `getOrder()` method so that it returns the value that is suitable for your setup. Apart from this, you can use
+properties to set the order of the `DiscoveryClient`
+implementations provided by Spring Cloud, among others  `ConsulDiscoveryClient`, `EurekaDiscoveryClient` and
+`ZookeeperDiscoveryClient`. In order to do it, you just need to set the
+`spring.cloud.{clientIdentifier}.discovery.order` (or `eureka.client.order` for Eureka) property to the desired value.

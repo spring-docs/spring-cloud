@@ -1,0 +1,13 @@
+include::page$attributes.adoc[]
+
+=== Endpoints
+
+For a Spring Boot Actuator application, some additional management endpoints are available. You can use:
+
+* `POST` to `/actuator/env` to update the `Environment` and rebind `@ConfigurationProperties` and log levels.
+* `/actuator/refresh` to re-load the boot strap context and refresh the `@RefreshScope` beans.
+* `/actuator/restart` to close the `ApplicationContext` and restart it (disabled by default).
+* `/actuator/pause` and `/actuator/resume` for calling the `Lifecycle` methods (`stop()` and `start()` on the `ApplicationContext`).
+
+NOTE: If you disable the `/actuator/restart` endpoint then the `/actuator/pause` and `/actuator/resume` endpoints
+will also be disabled since they are just a special case of `/actuator/restart`.

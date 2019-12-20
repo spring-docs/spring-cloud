@@ -1,0 +1,9 @@
+include::page$attributes.adoc[]
+
+== Spring Cloud LoadBalancer
+
+Spring Cloud provides its own client-side load-balancer abstraction and implementation. For the load-balancing
+mechanism, `ReactiveLoadBalancer` interface has been added and a Round-Robin-based implementation
+has been provided for it. In order to get instances to select from reactive `ServiceInstanceListSupplier`
+is used. Currently we support a service-discovery-based implementation of `ServiceInstanceListSupplier`
+that retrieves available instances from Service Discovery using a xref:spring-cloud-commons:-common-abstractions:discovery-client.adoc#discovery-client[Discovery Client] available in the classpath.

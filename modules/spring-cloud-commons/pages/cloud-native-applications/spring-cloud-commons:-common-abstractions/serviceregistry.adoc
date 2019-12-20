@@ -1,0 +1,67 @@
+include::page$attributes.adoc[]
+
+=== ServiceRegistry
+
+Commons now provides a `ServiceRegistry` interface that provides methods such as `register(Registration)` and `deregister(Registration)`, which let you provide custom registered services.
+`Registration` is a marker interface.
+
+The following example shows the `ServiceRegistry` in use:
+
+====
+[source,java,indent=0]
+----
+@Configuration
+@EnableDiscoveryClient(autoRegister=false)
+public class MyConfiguration {
+    private ServiceRegistry registry;
+
+    public MyConfiguration(ServiceRegistry registry) {
+        this.registry = registry;
+    }
+
+    // called through some external process, such as an event or a custom actuator endpoint
+    public void register() {
+        Registration registration = constructRegistration();
+        this.registry.register(registration);
+    }
+}
+----
+====
+
+Each `ServiceRegistry` implementation has its own `Registry` implementation.
+
+* `ZookeeperRegistration` used with `ZookeeperServiceRegistry`
+* `EurekaRegistration` used with `EurekaServiceRegistry`
+* `ConsulRegistration` used with `ConsulServiceRegistry`
+
+If you are using the `ServiceRegistry` interface, you are going to need to pass the
+correct `Registry` implementation for the `ServiceRegistry` implementation you
+are using.
+
+
+==== ServiceRegistry Auto-Registration
+
+By default, the `ServiceRegistry` implementation auto-registers the running service.
+To disable that behavior, you can set:
+* `@EnableDiscoveryClient(autoRegister=false)` to permanently disable auto-registration.
+* `spring.cloud.service-registry.auto-registration.enabled=false` to disable the behavior through configuration.
+
+===== ServiceRegistry Auto-Registration Events
+
+There are two events that will be fired when a service auto-registers.  The first event, called
+`InstancePreRegisteredEvent`, is fired before the service is registered.  The second
+event, called `InstanceRegisteredEvent`, is fired after the service is registered.  You can register an
+`ApplicationListener`(s) to listen to and react to these events.
+
+NOTE: These events will not be fired if the `spring.cloud.service-registry.auto-registration.enabled` property is set to `false`.
+
+==== Service Registry Actuator Endpoint
+
+Spring Cloud Commons provides a `/service-registry` actuator endpoint.
+This endpoint relies on a `Registration` bean in the Spring Application Context.
+Calling `/service-registry` with GET returns the status of the `Registration`.
+Using POST to the same endpoint with a JSON body changes the status of the current `Registration` to the new value.
+The JSON body has to include the `status` field with the preferred value.
+Please see the documentation of the `ServiceRegistry` implementation you use for the allowed values when updating the status and the values returned for the status.
+For instance, Eureka's supported statuses are `UP`, `DOWN`, `OUT_OF_SERVICE`, and `UNKNOWN`.
+

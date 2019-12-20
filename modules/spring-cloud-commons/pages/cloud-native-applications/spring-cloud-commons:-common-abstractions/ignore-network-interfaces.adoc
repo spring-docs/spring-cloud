@@ -1,0 +1,48 @@
+include::page$attributes.adoc[]
+[[ignore-network-interfaces]]
+=== Ignore Network Interfaces
+
+Sometimes, it is useful to ignore certain named network interfaces so that they can be excluded from Service Discovery registration (for example, when running in a Docker container).
+A list of regular expressions can be set to cause the desired network interfaces to be ignored.
+The following configuration ignores the `docker0` interface and all interfaces that start with `veth`:
+
+.application.yml
+====
+----
+spring:
+  cloud:
+    inetutils:
+      ignoredInterfaces:
+        - docker0
+        - veth.*
+----
+====
+
+You can also force the use of only specified network addresses by using a list of regular expressions, as the following example shows:
+
+.bootstrap.yml
+====
+----
+spring:
+  cloud:
+    inetutils:
+      preferredNetworks:
+        - 192.168
+        - 10.0
+----
+====
+
+You can also force the use of only site-local addresses, as the following example shows:
+
+.application.yml
+====
+----
+spring:
+  cloud:
+    inetutils:
+      useOnlySiteLocalInterfaces: true
+----
+====
+
+See https://docs.oracle.com/javase/8/docs/api/java/net/Inet4Address.html#isSiteLocalAddress--[Inet4Address.html.isSiteLocalAddress()] for more details about what constitutes a site-local address.
+
