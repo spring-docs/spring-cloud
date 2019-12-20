@@ -1,0 +1,22 @@
+name: spring-cloud-docs
+version: master
+title: Spring cloud docs
+nav:
+  - modules/spring-cloud-commons/nav.adoc
+  - modules/spring-cloud-netflix/nav.adoc
+  - modules/spring-cloud-consul/nav.adoc
+  - modules/spring-cloud-zookeeper/nav.adoc
+  - modules/spring-cloud-gateway/nav.adoc
+  - modules/spring-cloud-openfeign/nav.adoc
+  - modules/spring-cloud-task/nav.adoc
+  - modules/spring-cloud-config/nav.adoc
+  - modules/spring-cloud-cli/nav.adoc
+  - modules/spring-cloud-aws/nav.adoc
+  - modules/spring-cloud-bus/nav.adoc
+  - modules/spring-cloud-contract/nav.adoc
+  - modules/spring-cloud-security/nav.adoc
+  - modules/spring-cloud-cloudfoundry/nav.adoc
+  - modules/spring-cloud-sleuth/nav.adoc
+  - modules/spring-cloud-stream/nav.adoc
+  - modules/spring-cloud-vault/nav.adoc
+  - modules/spring-cloud-function/nav.adoc
