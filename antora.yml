@@ -20,3 +20,8 @@ nav:
   - modules/spring-cloud-stream/nav.adoc
   - modules/spring-cloud-vault/nav.adoc
   - modules/spring-cloud-function/nav.adoc
+
+# from spring-data-build/parent/pom.xml
+asciidoc:
+  attributes:
+    spring-cloud-version: 2.2.1.BUILD-SNAPSHOT
