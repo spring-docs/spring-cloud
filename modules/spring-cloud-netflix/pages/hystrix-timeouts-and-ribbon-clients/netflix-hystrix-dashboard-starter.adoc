@@ -1,0 +1,12 @@
+include::page$attributes.adoc[]
+[[netflix-hystrix-dashboard-starter]]
+=== How to Include the Hystrix Dashboard
+
+To include the Hystrix Dashboard in your project, use the starter with a group ID of  `org.springframework.cloud` and an artifact ID of `spring-cloud-starter-netflix-hystrix-dashboard`.
+See the https://projects.spring.io/spring-cloud/[Spring Cloud Project page] for details on setting up your build system with the current Spring Cloud Release Train.
+
+To run the Hystrix Dashboard, annotate your Spring Boot main class with `@EnableHystrixDashboard`.
+Then visit `/hystrix` and point the dashboard to an individual instance's `/hystrix.stream` endpoint in a Hystrix client application.
+
+NOTE: When connecting to a `/hystrix.stream` endpoint that uses HTTPS, the certificate used by the server must be trusted by the JVM.
+If the certificate is not trusted, you must import the certificate into the JVM in order for the Hystrix Dashboard to make a successful connection to the stream endpoint.

@@ -1,0 +1,21 @@
+include::page$attributes.adoc[]
+
+=== Enabling Cross Origin Requests
+
+By default Zuul routes all Cross Origin requests (CORS) to the services. If you want instead Zuul to handle these requests it can be done by providing custom `WebMvcConfigurer` bean:
+[source,java]
+----
+@Bean
+public WebMvcConfigurer corsConfigurer() {
+    return new WebMvcConfigurer() {
+        public void addCorsMappings(CorsRegistry registry) {
+            registry.addMapping("/path-1/**")
+                    .allowedOrigins("https://allowed-origin.com")
+                    .allowedMethods("GET", "POST");
+        }
+    };
+}
+----
+In the example above, we allow `GET` and `POST` methods from `https://allowed-origin.com` to send cross-origin requests to the endpoints starting with `path-1`.
+You can apply CORS configuration to a specific path pattern or globally for the whole application, using `/**` mapping.
+You can customize properties: `allowedOrigins`,`allowedMethods`,`allowedHeaders`,`exposedHeaders`,`allowCredentials` and `maxAge` via this configuration.

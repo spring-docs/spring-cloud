@@ -1,0 +1,50 @@
+include::page$attributes.adoc[]
+
+=== Using the EurekaClient
+
+Once you have an application that is a discovery client, you can use it to discover service instances from the xref:spring-cloud-eureka-server:spring-cloud-eureka-server.adoc#spring-cloud-eureka-server[Eureka Server].
+One way to do so is to use the native `com.netflix.discovery.EurekaClient` (as opposed to the Spring Cloud `DiscoveryClient`), as shown in the following example:
+
+----
+@Autowired
+private EurekaClient discoveryClient;
+
+public String serviceUrl() {
+    InstanceInfo instance = discoveryClient.getNextServerFromEureka("STORES", false);
+    return instance.getHomePageUrl();
+}
+----
+
+[TIP]
+====
+Do not use the `EurekaClient` in a `@PostConstruct` method or in a `@Scheduled` method (or anywhere where the `ApplicationContext` might not be started yet).
+It is initialized in a `SmartLifecycle` (with `phase=0`), so the earliest you can rely on it being available is in another `SmartLifecycle` with a higher phase.
+====
+
+==== EurekaClient without Jersey
+
+By default, EurekaClient uses Jersey for HTTP communication.
+If you wish to avoid dependencies from Jersey, you can exclude it from your dependencies.
+Spring Cloud auto-configures a transport client based on Spring `RestTemplate`.
+The following example shows Jersey being excluded:
+
+----
+<dependency>
+    <groupId>org.springframework.cloud</groupId>
+    <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+    <exclusions>
+        <exclusion>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-client</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+        </exclusion>
+        <exclusion>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <artifactId>jersey-apache-client4</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+----

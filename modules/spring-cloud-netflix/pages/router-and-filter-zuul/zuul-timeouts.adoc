@@ -1,0 +1,12 @@
+include::page$attributes.adoc[]
+
+=== Zuul Timeouts
+
+If you want to configure the socket timeouts and read timeouts for requests proxied through Zuul, you have two options, based on your configuration:
+
+* If Zuul uses service discovery, you need to configure these timeouts with the
+`ribbon.ReadTimeout` and `ribbon.SocketTimeout` Ribbon properties.
+
+If you have configured Zuul routes by specifying URLs, you need to use
+`zuul.host.connect-timeout-millis` and `zuul.host.socket-timeout-millis`.
+

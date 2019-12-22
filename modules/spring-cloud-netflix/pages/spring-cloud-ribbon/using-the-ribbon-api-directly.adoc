@@ -1,0 +1,20 @@
+include::page$attributes.adoc[]
+
+=== Using the Ribbon API Directly
+
+You can also use the `LoadBalancerClient` directly, as shown in the following example:
+
+[source,java,indent=0]
+----
+public class MyClass {
+    @Autowired
+    private LoadBalancerClient loadBalancer;
+
+    public void doStuff() {
+        ServiceInstance instance = loadBalancer.choose("stores");
+        URI storesUri = URI.create(String.format("https://%s:%s", instance.getHost(), instance.getPort()));
+        // ... do something with the URI
+    }
+}
+----
+

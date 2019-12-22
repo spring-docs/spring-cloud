@@ -1,0 +1,29 @@
+include::page$attributes.adoc[]
+
+=== Customizing the Ribbon Client by Setting Properties
+
+Starting with version 1.2.0, Spring Cloud Netflix now supports customizing Ribbon clients by setting properties to be compatible with the https://github.com/Netflix/ribbon/wiki/Working-with-load-balancers#components-of-load-balancer[Ribbon documentation].
+
+This lets you change behavior at start up time in different environments.
+
+The following list shows the supported properties>:
+
+* `<clientName>.ribbon.NFLoadBalancerClassName`: Should implement `ILoadBalancer`
+* `<clientName>.ribbon.NFLoadBalancerRuleClassName`: Should implement `IRule`
+* `<clientName>.ribbon.NFLoadBalancerPingClassName`: Should implement `IPing`
+* `<clientName>.ribbon.NIWSServerListClassName`: Should implement `ServerList`
+* `<clientName>.ribbon.NIWSServerListFilterClassName`: Should implement `ServerListFilter`
+
+NOTE: Classes defined in these properties have precedence over beans defined by using `@RibbonClient(configuration=MyRibbonConfig.class)` and the defaults provided by Spring Cloud Netflix.
+
+To set the `IRule` for a service name called `users`, you could set the following properties:
+
+.application.yml
+----
+users:
+  ribbon:
+    NIWSServerListClassName: com.netflix.loadbalancer.ConfigurationBasedServerList
+    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.WeightedResponseTimeRule
+----
+
+See the https://github.com/Netflix/ribbon/wiki/Working-with-load-balancers[Ribbon documentation] for implementations provided by Ribbon.

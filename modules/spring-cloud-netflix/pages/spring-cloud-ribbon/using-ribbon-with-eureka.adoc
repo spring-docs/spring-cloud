@@ -1,0 +1,19 @@
+include::page$attributes.adoc[]
+
+=== Using Ribbon with Eureka
+
+When Eureka is used in conjunction with Ribbon (that is, both are on the classpath), the `ribbonServerList` is overridden with an extension of `DiscoveryEnabledNIWSServerList`, which populates the list of servers from Eureka.
+It also replaces the `IPing` interface with `NIWSDiscoveryPing`, which delegates to Eureka to determine if a server is up.
+The `ServerList` that is installed by default is a `DomainExtractingServerList`. Its purpose is to make metadata available to the load balancer without using AWS AMI metadata (which is what Netflix relies on).
+By default, the server list is constructed with "`zone`" information, as provided in the instance metadata (so, on the remote clients, set `eureka.instance.metadataMap.zone`).
+If that is missing and if the `approximateZoneFromHostname` flag is set, it can use the domain name from the server hostname as a proxy for the zone.
+Once the zone information is available, it can be used in a `ServerListFilter`.
+By default, it is used to locate a server in the same zone as the client, because the default is a `ZonePreferenceServerListFilter`.
+By default, the zone of the client is determined in the same way as the remote instances (that is, through `eureka.instance.metadataMap.zone`).
+
+NOTE: The orthodox "`archaius`" way to set the client zone is through a configuration property called "@zone".
+If it is available, Spring Cloud uses that in preference to all other settings (note that the key must be quoted in YAML configuration).
+
+NOTE: If there is no other source of zone data, then a guess is made, based on the client configuration (as opposed to the instance configuration).
+We take `eureka.client.availabilityZones`, which is a map from region name to a list of zones, and pull out the first zone for the instance's own region (that is, the `eureka.client.region`, which defaults to "us-east-1", for compatibility with native Netflix).
+

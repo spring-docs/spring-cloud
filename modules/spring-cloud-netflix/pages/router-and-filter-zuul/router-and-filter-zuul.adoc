@@ -1,0 +1,28 @@
+include::page$attributes.adoc[]
+
+== Router and Filter: Zuul
+
+Routing is an integral part of a microservice architecture.
+For example, `/` may be mapped to your web application, `/api/users` is mapped to the user service and `/api/shop` is mapped to the shop service.
+https://github.com/Netflix/zuul[Zuul] is a JVM-based router and server-side load balancer from Netflix.
+
+https://www.slideshare.net/MikeyCohen1/edge-architecture-ieee-international-conference-on-cloud-engineering-32240146/27[Netflix uses Zuul] for the following:
+
+* Authentication
+* Insights
+* Stress Testing
+* Canary Testing
+* Dynamic Routing
+* Service Migration
+* Load Shedding
+* Security
+* Static Response handling
+* Active/Active traffic management
+
+Zuul's rule engine lets rules and filters be written in essentially any JVM language, with built-in support for Java and Groovy.
+
+NOTE: The configuration property `zuul.max.host.connections` has been replaced by two new properties, `zuul.host.maxTotalConnections` and `zuul.host.maxPerRouteConnections`, which default to 200 and 20 respectively.
+
+NOTE: The default Hystrix isolation pattern (`ExecutionIsolationStrategy`) for all routes is `SEMAPHORE`.
+`zuul.ribbonIsolationStrategy` can be changed to `THREAD` if that isolation pattern is preferred.
+

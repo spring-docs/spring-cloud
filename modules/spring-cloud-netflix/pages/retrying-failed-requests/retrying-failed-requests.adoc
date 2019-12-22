@@ -1,0 +1,10 @@
+include::page$attributes.adoc[]
+[[retrying-failed-requests]]
+== Retrying Failed Requests
+
+Spring Cloud Netflix offers a variety of ways to make HTTP requests.
+You can use a load balanced `RestTemplate`, Ribbon, or Feign.
+No matter how you choose to create your HTTP requests, there is always a chance that a request may fail.
+When a request fails, you may want to have the request be retried automatically.
+To do so when using Sping Cloud Netflix, you need to include https://github.com/spring-projects/spring-retry[Spring Retry] on your application's classpath.
+When Spring Retry is present, load-balanced `RestTemplates`, Feign, and Zuul automatically retry any failed requests (assuming your configuration allows doing so).

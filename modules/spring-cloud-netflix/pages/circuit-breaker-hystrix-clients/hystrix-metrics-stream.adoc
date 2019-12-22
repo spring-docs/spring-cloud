@@ -1,0 +1,15 @@
+include::page$attributes.adoc[]
+
+=== Hystrix Metrics Stream
+
+To enable the Hystrix metrics stream, include a dependency on `spring-boot-starter-actuator` and set
+`management.endpoints.web.exposure.include: hystrix.stream`.
+Doing so exposes the `/actuator/hystrix.stream` as a management endpoint, as shown in the following example:
+
+[source,xml]
+----
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+----

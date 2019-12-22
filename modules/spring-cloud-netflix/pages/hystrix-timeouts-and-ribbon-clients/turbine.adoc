@@ -1,0 +1,92 @@
+include::page$attributes.adoc[]
+
+=== Turbine
+
+Looking at an individual instance's Hystrix data is not very useful in terms of the overall health of the system.  https://github.com/Netflix/Turbine[Turbine] is an application that aggregates all of the relevant `/hystrix.stream` endpoints into a combined `/turbine.stream` for use in the Hystrix Dashboard.
+Individual instances are located through Eureka.
+Running Turbine requires annotating your main class with the `@EnableTurbine` annotation  (for example, by using spring-cloud-starter-netflix-turbine to set up the classpath).
+All of the documented configuration properties from https://github.com/Netflix/Turbine/wiki/Configuration-(1.x)[the Turbine 1 wiki] apply.
+The only difference is that the `turbine.instanceUrlSuffix` does not need the port prepended, as this is handled automatically unless `turbine.instanceInsertPort=false`.
+
+NOTE: By default, Turbine looks for the `/hystrix.stream` endpoint on a registered instance by looking up its `hostName` and `port` entries in Eureka and then appending `/hystrix.stream` to it.
+If the instance's metadata contains `management.port`, it is used instead of the `port` value for the `/hystrix.stream` endpoint.
+By default, the metadata entry called `management.port` is equal to the `management.port` configuration property.
+It can be overridden though with following configuration:
+
+----
+eureka:
+  instance:
+    metadata-map:
+      management.port: ${management.port:8081}
+----
+
+
+The `turbine.appConfig` configuration key is a list of Eureka serviceIds that turbine uses to lookup instances.
+The turbine stream is then used in the Hystrix dashboard with a URL similar to the following:
+
+`https://my.turbine.server:8080/turbine.stream?cluster=CLUSTERNAME`
+
+The cluster parameter can be omitted if the name is `default`.
+The `cluster` parameter must match an entry in `turbine.aggregator.clusterConfig`.
+Values returned from Eureka are upper-case. Consequently, the following example works if there is an application called `customers` registered with Eureka:
+
+----
+turbine:
+  aggregator:
+    clusterConfig: CUSTOMERS
+  appConfig: customers
+----
+
+If you need to customize which cluster names should be used by Turbine (because you do not want to store cluster names in
+`turbine.aggregator.clusterConfig` configuration), provide a bean of type `TurbineClustersProvider`.
+
+The `clusterName` can be customized by a SPEL expression in `turbine.clusterNameExpression` with root as an instance of `InstanceInfo`.
+The default value is `appName`, which means that the Eureka `serviceId` becomes the cluster key (that is, the `InstanceInfo` for customers has an `appName` of `CUSTOMERS`).
+A different example is `turbine.clusterNameExpression=aSGName`, which gets the cluster name from the AWS ASG name.
+The following listing shows another example:
+
+----
+turbine:
+  aggregator:
+    clusterConfig: SYSTEM,USER
+  appConfig: customers,stores,ui,admin
+  clusterNameExpression: metadata['cluster']
+----
+
+In the preceding example, the cluster name from four services is pulled from their metadata map and is expected to have values that include `SYSTEM` and `USER`.
+
+To use the "`default`" cluster for all apps, you need a string literal expression (with single quotes and escaped with double quotes if it is in YAML as well):
+
+----
+turbine:
+  appConfig: customers,stores
+  clusterNameExpression: "'default'"
+----
+
+Spring Cloud provides a `spring-cloud-starter-netflix-turbine` that has all the dependencies you need to get a Turbine server running. To add Turbine, create a Spring Boot application and annotate it with `@EnableTurbine`.
+
+NOTE: By default, Spring Cloud lets Turbine use the host and port to allow multiple processes per host, per cluster.
+If you want the native Netflix behavior built into Turbine to _not_ allow multiple processes per host, per cluster (the key to the instance ID is the hostname), set `turbine.combineHostPort=false`.
+
+==== Clusters Endpoint
+
+In some situations it might be useful for other applications to know what custers have been configured
+in Turbine.  To support this you can use the `/clusters` endpoint which will return a JSON array of
+all the configured clusters.
+
+.GET /clusters
+[source,json]
+----
+[
+  {
+    "name": "RACES",
+    "link": "http://localhost:8383/turbine.stream?cluster=RACES"
+  },
+  {
+    "name": "WEB",
+    "link": "http://localhost:8383/turbine.stream?cluster=WEB"
+  }
+]
+----
+
+This endpoint can be disabled by setting `turbine.endpoints.clusters.enabled` to `false`.

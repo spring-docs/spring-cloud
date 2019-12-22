@@ -1,0 +1,25 @@
+include::page$attributes.adoc[]
+[[how-to-provdie-a-key-to-ribbon]]
+=== How to Provide a Key to Ribbon's `IRule`
+
+If you need to provide your own `IRule` implementation to handle a special routing requirement like a "`canary`" test, pass some information to the `choose` method of `IRule`.
+
+.com.netflix.loadbalancer.IRule.java
+----
+public interface IRule{
+    public Server choose(Object key);
+         :
+----
+
+You can provide some information that is used by your `IRule` implementation to choose a target server, as shown in the following example:
+
+----
+RequestContext.getCurrentContext()
+              .set(FilterConstants.LOAD_BALANCER_KEY, "canary-test");
+----
+
+If you put any object into the `RequestContext` with a key of `FilterConstants.LOAD_BALANCER_KEY`, it is passed to the `choose` method of the  `IRule` implementation.
+The code shown in the preceding example must be executed before `RibbonRoutingFilter` is executed.
+Zuul's pre filter is the best place to do that.
+You can access HTTP headers and query parameters through the `RequestContext` in pre filter, so it can be used to determine the `LOAD_BALANCER_KEY` that is passed to Ribbon.
+If you do not put any value with `LOAD_BALANCER_KEY` in `RequestContext`, null is passed as a parameter of the `choose` method.

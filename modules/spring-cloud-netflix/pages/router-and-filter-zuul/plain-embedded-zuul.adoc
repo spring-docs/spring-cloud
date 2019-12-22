@@ -1,0 +1,17 @@
+include::page$attributes.adoc[]
+
+=== Plain Embedded Zuul
+
+If you use `@EnableZuulServer` (instead of `@EnableZuulProxy`), you can also run a Zuul server without proxying or selectively switch on parts of the proxying platform.
+Any beans that you add to the application of type `ZuulFilter` are installed automatically (as they are with `@EnableZuulProxy`) but without any of the proxy filters being added automatically.
+
+In that case, the routes into the Zuul server are still specified by configuring "zuul.routes.{asterisk}", but there is no service discovery and no proxying. Consequently, the "serviceId" and "url" settings are ignored.
+The following example maps all paths in "/api/{all}" to the Zuul filter chain:
+
+.application.yml
+[source,yaml]
+----
+ zuul:
+  routes:
+    api: /api/**
+----

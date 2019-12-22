@@ -1,0 +1,27 @@
+include::page$attributes.adoc[]
+
+=== Uploading Files through Zuul
+
+If you use `@EnableZuulProxy`, you can use the proxy paths to upload files and it should work, so long as the files are small.
+For large files there is an alternative path that bypasses the Spring `DispatcherServlet` (to avoid multipart processing) in "/zuul/{asterisk}".
+In other words, if you have `zuul.routes.customers=/customers/{all}`, then you can `POST` large files to `/zuul/customers/*`.
+The servlet path is externalized via `zuul.servletPath`.
+If the proxy route takes you through a Ribbon load balancer, extremely large files also require elevated timeout settings, as shown in the following example:
+
+.application.yml
+[source,yaml]
+----
+hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds: 60000
+ribbon:
+  ConnectTimeout: 3000
+  ReadTimeout: 60000
+----
+
+Note that, for streaming to work with large files, you need to use chunked encoding in the request (which some browsers do not do by default), as shown in the following example:
+
+
+[source,bash]
+----
+$ curl -v -H "Transfer-Encoding: chunked" \
+    -F "file=@mylarge.iso" localhost:9999/zuul/simple/file
+----

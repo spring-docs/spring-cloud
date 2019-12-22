@@ -1,0 +1,11 @@
+include::page$attributes.adoc[]
+
+=== Customizing the Default for All Ribbon Clients
+
+A default configuration can be provided for all Ribbon Clients by using the `@RibbonClients` annotation and registering a default configuration, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{project-root}/spring-cloud-netflix-ribbon/src/test/java/org/springframework/cloud/netflix/ribbon/test/RibbonClientDefaultConfigurationTestsConfig.java[tags=sample_default_ribbon_config,indent=0]
+
+----

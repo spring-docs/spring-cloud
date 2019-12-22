@@ -1,0 +1,7 @@
+include::page$attributes.adoc[]
+
+=== Zuul Http Client
+
+The default HTTP client used by Zuul is now backed by the Apache HTTP Client instead of the deprecated Ribbon `RestClient`.
+To use `RestClient` or `okhttp3.OkHttpClient`, set `ribbon.restclient.enabled=true` or `ribbon.okhttp.enabled=true`, respectively.
+If you would like to customize the Apache HTTP client or the OK HTTP client, provide a bean of type `ClosableHttpClient` or `OkHttpClient`.

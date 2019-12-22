@@ -1,0 +1,10 @@
+include::page$attributes.adoc[]
+
+=== Ignored Headers
+
+In addition to the route-sensitive headers, you can set a global value called `zuul.ignoredHeaders` for values (both request and response) that should be discarded during interactions with downstream services.
+By default, if Spring Security is not on the classpath, these are empty.
+Otherwise, they are initialized to a set of well known "`security`" headers (for example, involving caching) as specified by Spring Security.
+The assumption in this case is that the downstream services might add these headers, too, but we want the values from the proxy.
+To not discard these well known security headers when Spring Security is on the classpath, you can set `zuul.ignoreSecurityHeaders` to `false`.
+Doing so can be useful if you disabled the HTTP Security response headers in Spring Security and want the values provided by downstream services.

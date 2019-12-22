@@ -1,0 +1,8 @@
+include::page$attributes.adoc[]
+
+=== Metrics
+
+Zuul will provide metrics under the Actuator metrics endpoint for any failures that might occur when routing requests.
+These metrics can be viewed by hitting `/actuator/metrics`.  The metrics will have a name that has the format
+`ZUUL::EXCEPTION:errorCause:statusCode`.
+

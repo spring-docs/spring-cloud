@@ -1,0 +1,67 @@
+include::page$attributes.adoc[]
+
+=== Eureka Metadata for Instances and Clients
+
+It is worth spending a bit of time understanding how the Eureka metadata works, so you can use it in a way that makes sense in your platform.
+There is standard metadata for information such as hostname, IP address, port numbers, the status page, and health check.
+These are published in the service registry and used by clients to contact the services in a straightforward way.
+Additional metadata can be added to the instance registration in the `eureka.instance.metadataMap`, and this metadata is accessible in the remote clients.
+In general, additional metadata does not change the behavior of the client, unless the client is made aware of the meaning of the metadata.
+There are a couple of special cases, described later in this document, where Spring Cloud already assigns meaning to the metadata map.
+// TODO Add links from here to the relevant places in the document
+
+==== Using Eureka on Cloud Foundry
+
+Cloud Foundry has a global router so that all instances of the same app have the same hostname (other PaaS solutions with a similar architecture have the same arrangement).
+This is not necessarily a barrier to using Eureka.
+However, if you use the router (recommended or even mandatory, depending on the way your platform was set up), you need to explicitly set the hostname and port numbers (secure or non-secure) so that they use the router.
+You might also want to use instance metadata so that you can distinguish between the instances on the client (for example, in a custom load balancer).
+By default, the `eureka.instance.instanceId` is `vcap.application.instance_id`, as shown in the following example:
+
+.application.yml
+----
+eureka:
+  instance:
+    hostname: ${vcap.application.uris[0]}
+    nonSecurePort: 80
+----
+
+Depending on the way the security rules are set up in your Cloud Foundry instance, you might be able to register and use the IP address of the host VM for direct service-to-service calls.
+This feature is not yet available on Pivotal Web Services (https://run.pivotal.io[PWS]).
+
+==== Using Eureka on AWS
+
+If the application is planned to be deployed to an AWS cloud, the Eureka instance must be configured to be AWS-aware. You can do so by customizing the {github-code}/spring-cloud-netflix-eureka-client/src/main/java/org/springframework/cloud/netflix/eureka/EurekaInstanceConfigBean.java[EurekaInstanceConfigBean] as follows:
+
+[source,java,indent=0]
+----
+@Bean
+@Profile("!default")
+public EurekaInstanceConfigBean eurekaInstanceConfig(InetUtils inetUtils) {
+  EurekaInstanceConfigBean b = new EurekaInstanceConfigBean(inetUtils);
+  AmazonInfo info = AmazonInfo.Builder.newBuilder().autoBuild("eureka");
+  b.setDataCenterInfo(info);
+  return b;
+}
+----
+
+==== Changing the Eureka Instance ID
+
+A vanilla Netflix Eureka instance is registered with an ID that is equal to its host name (that is, there is only one service per host).
+Spring Cloud Eureka provides a sensible default, which is defined as follows:
+
+`${spring.cloud.client.hostname}:${spring.application.name}:${spring.application.instance_id:${server.port}}}`
+
+An example is `myhost:myappname:8080`.
+
+By using Spring Cloud, you can override this value by providing a unique identifier in `eureka.instance.instanceId`, as shown in the following example:
+
+.application.yml
+----
+eureka:
+  instance:
+    instanceId: ${spring.application.name}:${vcap.application.instance_id:${spring.application.instance_id:${random.value}}}
+----
+
+With the metadata shown in the preceding example and multiple service instances deployed on localhost, the random value is inserted there to make the instance unique.
+In Cloud Foundry, the `vcap.application.instance_id` is populated automatically in a Spring Boot application, so the random value is not needed.

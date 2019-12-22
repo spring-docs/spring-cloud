@@ -1,0 +1,32 @@
+include::page$attributes.adoc[]
+
+=== Registering a Secure Application
+
+If your app wants to be contacted over HTTPS, you can set two flags in the `EurekaInstanceConfig`:
+
+* `eureka.instance.[nonSecurePortEnabled]=[false]`
+* `eureka.instance.[securePortEnabled]=[true]`
+
+Doing so makes Eureka publish instance information that shows an explicit preference for secure communication.
+The Spring Cloud `DiscoveryClient` always returns a URI starting with `https` for a service configured this way.
+Similarly, when a service is configured this way, the Eureka (native) instance information has a secure health check URL.
+
+Because of the way Eureka works internally, it still publishes a non-secure URL for the status and home pages unless you also override those explicitly.
+You can use placeholders to configure the eureka instance URLs, as shown in the following example:
+
+.application.yml
+----
+eureka:
+  instance:
+    statusPageUrl: https://${eureka.hostname}/info
+    healthCheckUrl: https://${eureka.hostname}/health
+    homePageUrl: https://${eureka.hostname}/
+----
+
+(Note that `${eureka.hostname}` is a native placeholder only available
+in later versions of Eureka. You could achieve the same thing with
+Spring placeholders as well -- for example, by using `${eureka.instance.hostName}`.)
+
+NOTE: If your application runs behind a proxy, and the SSL termination is in the proxy (for example, if you run in Cloud Foundry or other platforms as a service), then you need to ensure that the proxy "`forwarded`" headers are intercepted and handled by the application.
+If the Tomcat container embedded in a Spring Boot application has explicit configuration for the 'X-Forwarded-\*` headers, this happens automatically.
+The links rendered by your app to itself being wrong (the wrong host, port, or protocol) is a sign that you got this configuration wrong.

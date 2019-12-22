@@ -1,0 +1,47 @@
+include::page$attributes.adoc[]
+
+=== Cookies and Sensitive Headers
+
+You can share headers between services in the same system, but you probably do not want sensitive headers leaking downstream into external servers.
+You can specify a list of ignored headers as part of the route configuration.
+Cookies play a special role, because they have well defined semantics in browsers, and they are always to be treated as sensitive.
+If the consumer of your proxy is a browser, then cookies for downstream services also cause problems for the user, because they all get jumbled up together (all downstream services look like they come from the same place).
+
+If you are careful with the design of your services, (for example, if only one of the downstream services sets cookies), you might be able to let them flow from the back end all the way up to the caller.
+Also, if your proxy sets cookies and all your back-end services are part of the same system, it can be natural to simply share them (and, for instance, use Spring Session to link them up to some shared state).
+Other than that, any cookies that get set by downstream services are likely to be not useful to the caller, so it is recommended that you make (at least) `Set-Cookie` and `Cookie` into sensitive headers for routes that are not part of your domain.
+Even for routes that are part of your domain, try to think carefully about what it means before letting cookies flow between them and the proxy.
+
+The sensitive headers can be configured as a comma-separated list per route, as shown in the following example:
+
+.application.yml
+[source,yaml]
+----
+ zuul:
+  routes:
+    users:
+      path: /myusers/**
+      sensitiveHeaders: Cookie,Set-Cookie,Authorization
+      url: https://downstream
+----
+
+NOTE: This is the default value for `sensitiveHeaders`, so you need not set it unless you want it to be different.
+This is new in Spring Cloud Netflix 1.1 (in 1.0, the user had no control over headers, and all cookies flowed in both directions).
+
+The `sensitiveHeaders` are a blacklist, and the default is not empty.
+Consequently, to make Zuul send all headers (except the `ignored` ones), you must explicitly set it to the empty list.
+Doing so is necessary if you want to pass cookie or authorization headers to your back end. The following example shows how to use `sensitiveHeaders`:
+
+.application.yml
+[source,yaml]
+----
+ zuul:
+  routes:
+    users:
+      path: /myusers/**
+      sensitiveHeaders:
+      url: https://downstream
+----
+
+You can also set sensitive headers, by setting `zuul.sensitiveHeaders`.
+If `sensitiveHeaders` is set on a route, it overrides the global `sensitiveHeaders` setting.

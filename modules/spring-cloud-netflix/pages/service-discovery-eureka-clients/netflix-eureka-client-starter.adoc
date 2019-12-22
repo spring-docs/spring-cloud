@@ -1,0 +1,6 @@
+include::page$attributes.adoc[]
+[[netflix-eureka-client-starter]]
+=== How to Include Eureka Client
+
+To include the Eureka Client in your project, use the starter with a group ID of `org.springframework.cloud` and an artifact ID of  `spring-cloud-starter-netflix-eureka-client`.
+See the https://projects.spring.io/spring-cloud/[Spring Cloud Project page] for details on setting up your build system with the current Spring Cloud Release Train.

@@ -1,0 +1,23 @@
+include::page$attributes.adoc[]
+
+=== Alternatives to the Native Netflix EurekaClient
+
+You need not use the raw Netflix `EurekaClient`.
+Also, it is usually more convenient to use it behind a wrapper of some sort.
+Spring Cloud has support for <<spring-cloud-feign, Feign>> (a REST client builder) and xref:spring-cloud-ribbon:spring-cloud-ribbon.adoc#spring-cloud-ribbon[Spring `RestTemplate`] through the logical Eureka service identifiers (VIPs) instead of physical URLs.
+To configure Ribbon with a fixed list of physical servers, you can set `<client>.ribbon.listOfServers` to a comma-separated list of physical addresses (or hostnames), where `<client>` is the ID of the client.
+
+You can also use the `org.springframework.cloud.client.discovery.DiscoveryClient`, which provides a simple API (not specific to Netflix) for discovery clients, as shown in the following example:
+
+----
+@Autowired
+private DiscoveryClient discoveryClient;
+
+public String serviceUrl() {
+    List<ServiceInstance> list = discoveryClient.getInstances("STORES");
+    if (list != null && list.size() > 0 ) {
+        return list.get(0).getUri();
+    }
+    return null;
+}
+----

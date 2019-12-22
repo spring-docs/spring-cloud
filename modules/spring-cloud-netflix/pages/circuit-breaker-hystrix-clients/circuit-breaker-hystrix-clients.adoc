@@ -1,0 +1,21 @@
+include::page$attributes.adoc[]
+
+== Circuit Breaker: Hystrix Clients
+
+Netflix has created a library called https://github.com/Netflix/Hystrix[Hystrix] that implements the https://martinfowler.com/bliki/CircuitBreaker.html[circuit breaker pattern].
+In a microservice architecture, it is common to have multiple layers of service calls, as shown in the following example:
+
+.Microservice Graph
+image::https://raw.githubusercontent.com/spring-cloud/spring-cloud-netflix/{branch}/docs/src/main/asciidoc/images/Hystrix.png[]
+
+A service failure in the lower level of services can cause cascading failure all the way up to the user.
+When calls to a particular service exceed `circuitBreaker.requestVolumeThreshold` (default: 20 requests) and the failure percentage is greater than `circuitBreaker.errorThresholdPercentage` (default: >50%) in a rolling window defined by `metrics.rollingStats.timeInMilliseconds` (default: 10 seconds), the circuit opens and the call is not made.
+In cases of error and an open circuit, a fallback can be provided by the developer.
+
+.Hystrix fallback prevents cascading failures
+image::https://raw.githubusercontent.com/spring-cloud/spring-cloud-netflix/{branch}/docs/src/main/asciidoc/images/HystrixFallback.png[]
+
+Having an open circuit stops cascading failures and allows overwhelmed or failing services time to recover.
+The fallback can be another Hystrix protected call, static data, or a sensible empty value.
+Fallbacks may be chained so that the first fallback makes some other business call, which in turn falls back to static data.
+

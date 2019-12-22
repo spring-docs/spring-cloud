@@ -1,0 +1,13 @@
+include::page$attributes.adoc[]
+[[spring-cloud-eureka-server-prefer-ip-address]]
+=== When to Prefer IP Address
+
+In some cases, it is preferable for Eureka to advertise the IP addresses of services rather than the hostname.
+Set `eureka.instance.preferIpAddress` to `true` and, when the application registers with eureka, it uses its IP address rather than its hostname.
+
+[TIP]
+====
+If the hostname cannot be determined by Java, then the IP address is sent to Eureka.
+Only explict way of setting the hostname is by setting `eureka.instance.hostname` property.
+You can set your hostname at the run-time by using an environment variable -- for example, `eureka.instance.hostname=${HOST_NAME}`.
+====

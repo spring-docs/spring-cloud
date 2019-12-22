@@ -1,0 +1,10 @@
+:sc-ext: java
+:project-full-name: Spring Cloud Netflix
+
+:github-tag: master
+:github-repo: spring-cloud/spring-cloud-netflix
+:github-raw: https://raw.github.com/{github-repo}/{github-tag}
+:github-code: https://github.com/{github-repo}/tree/{github-tag}
+:all: {asterisk}{asterisk}
+:nofooter:
+:branch: master

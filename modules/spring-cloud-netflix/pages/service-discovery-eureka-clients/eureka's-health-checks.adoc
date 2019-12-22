@@ -1,0 +1,21 @@
+include::page$attributes.adoc[]
+
+=== Eureka's Health Checks
+
+By default, Eureka uses the client heartbeat to determine if a client is up.
+Unless specified otherwise, the Discovery Client does not propagate the current health check status of the application, per the Spring Boot Actuator.
+Consequently, after successful registration, Eureka always announces that the application is in 'UP' state. This behavior can be altered by enabling Eureka health checks, which results in propagating application status to Eureka.
+As a consequence, every other application does not send traffic to applications in states other then 'UP'.
+The following example shows how to enable health checks for the client:
+
+.application.yml
+----
+eureka:
+  client:
+    healthcheck:
+      enabled: true
+----
+
+WARNING: `eureka.client.healthcheck.enabled=true` should only be set in `application.yml`. Setting the value in `bootstrap.yml` causes undesirable side effects, such as registering in Eureka with an `UNKNOWN` status.
+
+If you require more control over the health checks, consider implementing your own `com.netflix.appinfo.HealthCheckHandler`.

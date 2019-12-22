@@ -1,0 +1,6 @@
+include::page$attributes.adoc[]
+[[netflix-ribbon-starter]]
+=== How to Include Ribbon
+
+To include Ribbon in your project, use the starter with a group ID of `org.springframework.cloud` and an artifact ID of `spring-cloud-starter-netflix-ribbon`.
+See the https://projects.spring.io/spring-cloud/[Spring Cloud Project page] for details on setting up your build system with the current Spring Cloud Release Train.

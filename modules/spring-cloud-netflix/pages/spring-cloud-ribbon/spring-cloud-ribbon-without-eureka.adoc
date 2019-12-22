@@ -1,0 +1,16 @@
+include::page$attributes.adoc[]
+[[spring-cloud-ribbon-without-eureka]]
+=== Example: How to Use Ribbon Without Eureka
+
+Eureka is a convenient way to abstract the discovery of remote servers so that you do not have to hard code their URLs in clients.
+However, if you prefer not to use Eureka, Ribbon and Feign also work.
+Suppose you have declared a `@RibbonClient` for "stores", and Eureka is not in use (and not even on the classpath).
+The Ribbon client defaults to a configured server list.
+You can supply the configuration as follows:
+
+.application.yml
+----
+stores:
+  ribbon:
+    listOfServers: example.com,google.com
+----

@@ -1,0 +1,47 @@
+include::page$attributes.adoc[]
+[[spring-cloud-running-eureka-server]]
+=== How to Run a Eureka Server
+
+The following example shows a minimal Eureka server:
+
+[source,java,indent=0]
+----
+@SpringBootApplication
+@EnableEurekaServer
+public class Application {
+
+    public static void main(String[] args) {
+        new SpringApplicationBuilder(Application.class).web(true).run(args);
+    }
+
+}
+----
+
+The server has a home page with a UI and HTTP API endpoints for the normal Eureka functionality under `/eureka/*`.
+
+The following links have some Eureka background reading:  https://github.com/cfregly/fluxcapacitor/wiki/NetflixOSS-FAQ#eureka-service-discovery-load-balancer[flux capacitor] and https://groups.google.com/forum/?fromgroups#!topic/eureka_netflix/g3p2r7gHnN0[google group discussion].
+
+[TIP]
+====
+Due to Gradle's dependency resolution rules and the lack of a parent bom feature, depending on `spring-cloud-starter-netflix-eureka-server` can cause failures on application startup.
+To remedy this issue, add the Spring Boot Gradle plugin and import the Spring cloud starter parent bom as follows:
+
+.build.gradle
+[source,java,indent=0]
+----
+buildscript {
+  dependencies {
+    classpath("org.springframework.boot:spring-boot-gradle-plugin:{spring-boot-docs-version}")
+  }
+}
+
+apply plugin: "spring-boot"
+
+dependencyManagement {
+  imports {
+    mavenBom "org.springframework.cloud:spring-cloud-dependencies:{spring-cloud-version}"
+  }
+}
+----
+====
+

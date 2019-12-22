@@ -1,0 +1,16 @@
+include::page$attributes.adoc[]
+[[ribbon-child-context-eager-load]]
+=== Caching of Ribbon Configuration
+
+Each Ribbon named client has a corresponding child application Context that Spring Cloud maintains.
+This application context is lazily loaded on the first request to the named client.
+This lazy loading behavior can be changed to instead eagerly load these child application contexts at startup, by specifying the names of the Ribbon clients, as shown in the following example:
+
+.application.yml
+----
+ribbon:
+  eager-load:
+    enabled: true
+    clients: client1, client2, client3
+----
+

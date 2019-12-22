@@ -1,0 +1,12 @@
+include::page$attributes.adoc[]
+[[spring-cloud-eureka-server-zones-and-regions]]
+=== High Availability, Zones and Regions
+
+The Eureka server does not have a back end store, but the service instances in the registry all have to send heartbeats to keep their registrations up to date (so this can be done in memory).
+Clients also have an in-memory cache of Eureka registrations (so they do not have to go to the registry for every request to a service).
+
+By default, every Eureka server is also a Eureka client and requires (at least one) service URL to locate a peer.
+If you do not provide it, the service runs and works, but it fills your logs with a lot of noise about not being able to register with the peer.
+
+See also xref:spring-cloud-ribbon:spring-cloud-ribbon.adoc#spring-cloud-ribbon[below for details of Ribbon support] on the client side for Zones and Regions.
+

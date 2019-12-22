@@ -1,0 +1,29 @@
+include::page$attributes.adoc[]
+[[how-to-configure-hystrix-thread-pools]]
+=== How to Configure Hystrix Thread Pools
+
+If you change `zuul.ribbonIsolationStrategy` to `THREAD`, the thread isolation strategy for Hystrix is used for all routes.
+In that case, the `HystrixThreadPoolKey` is set to `RibbonCommand` as the default.
+It means that HystrixCommands for all routes are executed in the same Hystrix thread pool.
+This behavior can be changed with the following configuration:
+
+.application.yml
+----
+zuul:
+  threadPool:
+    useSeparateThreadPools: true
+----
+
+The preceding example results in HystrixCommands being executed in the Hystrix thread pool for each route.
+
+In this case, the default `HystrixThreadPoolKey` is the same as the service ID for each route.
+To add a prefix to `HystrixThreadPoolKey`, set `zuul.threadPool.threadPoolKeyPrefix` to the value that you want to add, as shown in the following example:
+
+.application.yml
+----
+zuul:
+  threadPool:
+    useSeparateThreadPools: true
+    threadPoolKeyPrefix: zuulgw
+----
+

@@ -1,0 +1,46 @@
+include::page$attributes.adoc[]
+
+=== Customizing the Ribbon Client
+
+You can configure some bits of a Ribbon client by using external properties in `<client>.ribbon.*`, which is similar to using the Netflix APIs natively, except that you can use Spring Boot configuration files.
+The native options can be inspected as static fields in https://github.com/Netflix/ribbon/blob/master/ribbon-core/src/main/java/com/netflix/client/config/CommonClientConfigKey.java[`CommonClientConfigKey`] (part of ribbon-core).
+
+Spring Cloud also lets you take full control of the client by declaring additional configuration (on top of the `RibbonClientConfiguration`) using `@RibbonClient`, as shown in the following example:
+
+[source,java,indent=0]
+----
+@Configuration
+@RibbonClient(name = "custom", configuration = CustomConfiguration.class)
+public class TestConfiguration {
+}
+----
+
+In this case, the client is composed from the components already in `RibbonClientConfiguration`, together with any in `CustomConfiguration` (where the latter generally overrides the former).
+// TODO "generally"? We should link to the rules that dictate this behavior.
+
+WARNING: The `CustomConfiguration` class must be a `@Configuration` class, but take care that it is not in a `@ComponentScan` for the main application context.
+Otherwise, it is shared by all the `@RibbonClients`. If you use `@ComponentScan` (or `@SpringBootApplication`), you need to take steps to avoid it being included (for instance, you can put it in a separate, non-overlapping package or specify the packages to scan explicitly in the `@ComponentScan`).
+
+The following table shows the beans that Spring Cloud Netflix provides by default for Ribbon:
+
+:frame: topbot
+[width="60%",options="header"]
+|====
+^|Bean Type ^|Bean Name ^|Class Name
+|`IClientConfig`|`ribbonClientConfig`|`DefaultClientConfigImpl`
+|`IRule`|`ribbonRule`|`ZoneAvoidanceRule`
+|`IPing`|`ribbonPing`|`DummyPing`
+|`ServerList<Server>`|`ribbonServerList`|`ConfigurationBasedServerList`
+|`ServerListFilter<Server>`|`ribbonServerListFilter`|`ZonePreferenceServerListFilter`
+|`ILoadBalancer`|`ribbonLoadBalancer`|`ZoneAwareLoadBalancer`
+|`ServerListUpdater`|`ribbonServerListUpdater`|`PollingServerListUpdater`
+|====
+
+Creating a bean of one of those type and placing it in a `@RibbonClient` configuration (such as `FooConfiguration` above) lets you override each one of the beans described, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{project-root}/spring-cloud-netflix-ribbon/src/test/java/org/springframework/cloud/netflix/ribbon/RibbonClientsPreprocessorIntegrationTests.java[tags=sample_override_ribbon_config,indent=0]
+----
+
+The include statement in the preceding example replaces `NoOpPing` with `PingUrl` and provides a custom `serverListFilter`.

@@ -1,0 +1,46 @@
+include::page$attributes.adoc[]
+
+=== How to Include Hystrix
+
+To include Hystrix in your project, use the starter with a group ID of `org.springframework.cloud`
+and a artifact ID of `spring-cloud-starter-netflix-hystrix`.
+See the https://projects.spring.io/spring-cloud/[Spring Cloud Project page] for details on setting up your build system with the current Spring Cloud Release Train.
+
+The following example shows a minimal Eureka server with a Hystrix circuit breaker:
+
+----
+@SpringBootApplication
+@EnableCircuitBreaker
+public class Application {
+
+    public static void main(String[] args) {
+        new SpringApplicationBuilder(Application.class).web(true).run(args);
+    }
+
+}
+
+@Component
+public class StoreIntegration {
+
+    @HystrixCommand(fallbackMethod = "defaultStores")
+    public Object getStores(Map<String, Object> parameters) {
+        //do stuff that might fail
+    }
+
+    public Object defaultStores(Map<String, Object> parameters) {
+        return /* something useful */;
+    }
+}
+
+----
+
+The `@HystrixCommand` is provided by a Netflix contrib library called https://github.com/Netflix/Hystrix/tree/master/hystrix-contrib/hystrix-javanica["`javanica`"].
+Spring Cloud automatically wraps Spring beans with that annotation in a proxy that is connected to the Hystrix circuit breaker.
+The circuit breaker calculates when to open and close the circuit and what to do in case of a failure.
+
+To configure the `@HystrixCommand` you can use the `commandProperties`
+attribute with a list of `@HystrixProperty` annotations.  See
+https://github.com/Netflix/Hystrix/tree/master/hystrix-contrib/hystrix-javanica#configuration[here]
+for more details.  See the https://github.com/Netflix/Hystrix/wiki/Configuration[Hystrix wiki]
+for details on the properties available.
+

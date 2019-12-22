@@ -1,0 +1,11 @@
+include::page$attributes.adoc[]
+
+=== Why Is It so Slow to Register a Service?
+
+Being an instance also involves a periodic heartbeat to the registry
+(through the client's `serviceUrl`) with a default duration of 30 seconds.
+A service is not available for discovery by clients until the instance, the server, and the client all have the same metadata in their local
+cache (so it could take 3 heartbeats).
+You can change the period by setting `eureka.instance.leaseRenewalIntervalInSeconds`.
+Setting it to a value of less than 30 speeds up the process of getting clients connected to other services.
+In production, it is probably better to stick with the default, because of internal computations in the server that make assumptions about the lease renewal period.

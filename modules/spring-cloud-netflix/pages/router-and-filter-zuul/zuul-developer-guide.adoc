@@ -1,0 +1,260 @@
+include::page$attributes.adoc[]
+[[zuul-developer-guide]]
+=== Zuul Developer Guide
+
+For a general overview of how Zuul works, see https://github.com/Netflix/zuul/wiki/How-it-Works[the Zuul Wiki].
+
+==== The Zuul Servlet
+
+Zuul is implemented as a Servlet. For the general cases, Zuul is embedded into the Spring Dispatch mechanism. This lets Spring MVC be in control of the routing.
+In this case, Zuul buffers requests.
+If there is a need to go through Zuul without buffering requests (for example, for large file uploads), the Servlet is also installed outside of the Spring Dispatcher.
+By default, the servlet has an address of `/zuul`.
+This path can be changed with the `zuul.servlet-path` property.
+
+==== Zuul RequestContext
+
+To pass information between filters, Zuul uses a https://github.com/Netflix/zuul/blob/1.x/zuul-core/src/main/java/com/netflix/zuul/context/RequestContext.java[`RequestContext`].
+Its data is held in a `ThreadLocal` specific to each request.
+Information about where to route requests, errors, and the actual `HttpServletRequest` and `HttpServletResponse` are stored there.
+The `RequestContext` extends `ConcurrentHashMap`, so anything can be stored in the context. https://github.com/spring-cloud/spring-cloud-netflix/blob/master/spring-cloud-netflix-zuul/src/main/java/org/springframework/cloud/netflix/zuul/filters/support/FilterConstants.java[`FilterConstants`] contains the keys used by the filters installed by Spring Cloud Netflix (more on these xref:router-and-filter-zuul:zuul-developer-guide.adoc#zuul-developer-guide-enable-filters[later]).
+
+==== `@EnableZuulProxy` vs. `@EnableZuulServer`
+
+Spring Cloud Netflix installs a number of filters, depending on which annotation was used to enable Zuul. `@EnableZuulProxy` is a superset of `@EnableZuulServer`. In other words, `@EnableZuulProxy` contains all the filters installed by `@EnableZuulServer`. The additional filters in the "`proxy`" enable routing functionality. If you want a "`blank`" Zuul, you should use `@EnableZuulServer`.
+
+[[zuul-developer-guide-enable-filters]]
+==== `@EnableZuulServer` Filters
+
+`@EnableZuulServer` creates a `SimpleRouteLocator` that loads route definitions from Spring Boot configuration files.
+
+The following filters are installed (as normal Spring Beans):
+
+* Pre filters:
+** `ServletDetectionFilter`: Detects whether the request is through the Spring Dispatcher. Sets a boolean with a key of `FilterConstants.IS_DISPATCHER_SERVLET_REQUEST_KEY`.
+** `FormBodyWrapperFilter`: Parses form data and re-encodes it for downstream requests.
+** `DebugFilter`: If the `debug` request parameter is set, sets `RequestContext.setDebugRouting()` and `RequestContext.setDebugRequest()` to `true`.
+* Route filters:
+** `SendForwardFilter`: Forwards requests by using the Servlet `RequestDispatcher`. The forwarding location is stored in the `RequestContext` attribute, `FilterConstants.FORWARD_TO_KEY`. This is useful for forwarding to endpoints in the current application.
+* Post filters:
+** `SendResponseFilter`: Writes responses from proxied requests to the current response.
+* Error filters:
+** `SendErrorFilter`: Forwards to `/error` (by default) if `RequestContext.getThrowable()` is not null. You can change the default forwarding path (`/error`) by setting the `error.path` property.
+
+==== `@EnableZuulProxy` Filters
+
+Creates a `DiscoveryClientRouteLocator` that loads route definitions from a `DiscoveryClient` (such as Eureka) as well as from properties. A route is created for each `serviceId` from the `DiscoveryClient`. As new services are added, the routes are refreshed.
+
+In addition to the filters described earlier, the following filters are installed (as normal Spring Beans):
+
+* Pre filters:
+** `PreDecorationFilter`: Determines where and how to route, depending on the supplied `RouteLocator`. It also sets various proxy-related headers for downstream requests.
+* Route filters:
+** `RibbonRoutingFilter`: Uses Ribbon, Hystrix, and pluggable HTTP clients to send requests. Service IDs are found in the `RequestContext` attribute, `FilterConstants.SERVICE_ID_KEY`. This filter can use different HTTP clients:
+*** Apache `HttpClient`: The default client.
+*** Squareup `OkHttpClient` v3: Enabled by having the `com.squareup.okhttp3:okhttp` library on the classpath and setting `ribbon.okhttp.enabled=true`.
+*** Netflix Ribbon HTTP client: Enabled by setting `ribbon.restclient.enabled=true`. This client has limitations, including that it does not support the PATCH method, but it also has built-in retry.
+** `SimpleHostRoutingFilter`: Sends requests to predetermined URLs through an Apache HttpClient. URLs are found in `RequestContext.getRouteHost()`.
+
+==== Custom Zuul Filter Examples
+
+Most of the following "How to Write" examples below are included https://github.com/spring-cloud-samples/sample-zuul-filters[Sample Zuul Filters] project. There are also examples of manipulating the request or response body in that repository.
+
+This section includes the following examples:
+
+* xref:router-and-filter-zuul:zuul-developer-guide.adoc#zuul-developer-guide-sample-pre-filter[zuul-developer-guide-sample-pre-filter]
+* xref:router-and-filter-zuul:zuul-developer-guide.adoc#zuul-developer-guide-sample-route-filter[zuul-developer-guide-sample-route-filter]
+* xref:router-and-filter-zuul:zuul-developer-guide.adoc#zuul-developer-guide-sample-post-filter[zuul-developer-guide-sample-post-filter]
+
+[[zuul-developer-guide-sample-pre-filter]]
+===== How to Write a Pre Filter
+
+Pre filters set up data in the `RequestContext` for use in filters downstream.
+The main use case is to set information required for route filters.
+The following example shows a Zuul pre filter:
+
+[source,java]
+----
+public class QueryParamPreFilter extends ZuulFilter {
+	@Override
+	public int filterOrder() {
+		return PRE_DECORATION_FILTER_ORDER - 1; // run before PreDecoration
+	}
+
+	@Override
+	public String filterType() {
+		return PRE_TYPE;
+	}
+
+	@Override
+	public boolean shouldFilter() {
+		RequestContext ctx = RequestContext.getCurrentContext();
+		return !ctx.containsKey(FORWARD_TO_KEY) // a filter has already forwarded
+				&& !ctx.containsKey(SERVICE_ID_KEY); // a filter has already determined serviceId
+	}
+    @Override
+    public Object run() {
+        RequestContext ctx = RequestContext.getCurrentContext();
+		HttpServletRequest request = ctx.getRequest();
+		if (request.getParameter("sample") != null) {
+		    // put the serviceId in `RequestContext`
+    		ctx.put(SERVICE_ID_KEY, request.getParameter("foo"));
+    	}
+        return null;
+    }
+}
+----
+
+The preceding filter populates `SERVICE_ID_KEY` from the `sample` request parameter.
+In practice, you should not do that kind of direct mapping. Instead, the service ID should be looked up from the value of `sample` instead.
+// TODO Why are we not doing that? Why share code we don't recommend using?
+
+Now that `SERVICE_ID_KEY` is populated, `PreDecorationFilter` does not run and `RibbonRoutingFilter` runs.
+
+TIP: If you want to route to a full URL, call `ctx.setRouteHost(url)` instead.
+
+To modify the path to which routing filters forward, set the `REQUEST_URI_KEY`.
+
+[[zuul-developer-guide-sample-route-filter]]
+===== How to Write a Route Filter
+
+Route filters run after pre filters and make requests to other services.
+Much of the work here is to translate request and response data to and from the model required by the client.
+The following example shows a Zuul route filter:
+
+[source,java]
+----
+public class OkHttpRoutingFilter extends ZuulFilter {
+	@Autowired
+	private ProxyRequestHelper helper;
+
+	@Override
+	public String filterType() {
+		return ROUTE_TYPE;
+	}
+
+	@Override
+	public int filterOrder() {
+		return SIMPLE_HOST_ROUTING_FILTER_ORDER - 1;
+	}
+
+	@Override
+	public boolean shouldFilter() {
+		return RequestContext.getCurrentContext().getRouteHost() != null
+				&& RequestContext.getCurrentContext().sendZuulResponse();
+	}
+
+    @Override
+    public Object run() {
+		OkHttpClient httpClient = new OkHttpClient.Builder()
+				// customize
+				.build();
+
+		RequestContext context = RequestContext.getCurrentContext();
+		HttpServletRequest request = context.getRequest();
+
+		String method = request.getMethod();
+
+		String uri = this.helper.buildZuulRequestURI(request);
+
+		Headers.Builder headers = new Headers.Builder();
+		Enumeration<String> headerNames = request.getHeaderNames();
+		while (headerNames.hasMoreElements()) {
+			String name = headerNames.nextElement();
+			Enumeration<String> values = request.getHeaders(name);
+
+			while (values.hasMoreElements()) {
+				String value = values.nextElement();
+				headers.add(name, value);
+			}
+		}
+
+		InputStream inputStream = request.getInputStream();
+
+		RequestBody requestBody = null;
+		if (inputStream != null && HttpMethod.permitsRequestBody(method)) {
+			MediaType mediaType = null;
+			if (headers.get("Content-Type") != null) {
+				mediaType = MediaType.parse(headers.get("Content-Type"));
+			}
+			requestBody = RequestBody.create(mediaType, StreamUtils.copyToByteArray(inputStream));
+		}
+
+		Request.Builder builder = new Request.Builder()
+				.headers(headers.build())
+				.url(uri)
+				.method(method, requestBody);
+
+		Response response = httpClient.newCall(builder.build()).execute();
+
+		LinkedMultiValueMap<String, String> responseHeaders = new LinkedMultiValueMap<>();
+
+		for (Map.Entry<String, List<String>> entry : response.headers().toMultimap().entrySet()) {
+			responseHeaders.put(entry.getKey(), entry.getValue());
+		}
+
+		this.helper.setResponse(response.code(), response.body().byteStream(),
+				responseHeaders);
+		context.setRouteHost(null); // prevent SimpleHostRoutingFilter from running
+		return null;
+    }
+}
+----
+
+The preceding filter translates Servlet request information into OkHttp3 request information, executes an HTTP request, and translates OkHttp3 response information to the Servlet response.
+
+[[zuul-developer-guide-sample-post-filter]]
+===== How to Write a Post Filter
+
+Post filters typically manipulate the response. The following filter adds a random `UUID` as the `X-Sample` header:
+
+[source,java]
+----
+public class AddResponseHeaderFilter extends ZuulFilter {
+	@Override
+	public String filterType() {
+		return POST_TYPE;
+	}
+
+	@Override
+	public int filterOrder() {
+		return SEND_RESPONSE_FILTER_ORDER - 1;
+	}
+
+	@Override
+	public boolean shouldFilter() {
+		return true;
+	}
+
+	@Override
+	public Object run() {
+		RequestContext context = RequestContext.getCurrentContext();
+    	HttpServletResponse servletResponse = context.getResponse();
+		servletResponse.addHeader("X-Sample", UUID.randomUUID().toString());
+		return null;
+	}
+}
+----
+
+NOTE: Other manipulations, such as transforming the response body, are much more complex and computationally intensive.
+
+==== How Zuul Errors Work
+
+If an exception is thrown during any portion of the Zuul filter lifecycle, the error filters are executed.
+The `SendErrorFilter` is only run if `RequestContext.getThrowable()` is not `null`.
+It then sets specific `javax.servlet.error.*` attributes in the request and forwards the request to the Spring Boot error page.
+
+==== Zuul Eager Application Context Loading
+
+Zuul internally uses Ribbon for calling the remote URLs.
+By default, Ribbon clients are lazily loaded by Spring Cloud on first call.
+This behavior can be changed for Zuul by using the following configuration, which results eager loading of the child Ribbon related Application contexts at application startup time.
+The following example shows how to enable eager loading:
+
+.application.yml
+----
+zuul:
+  ribbon:
+    eager-load:
+      enabled: true
+----

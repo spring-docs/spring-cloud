@@ -1,0 +1,6 @@
+include::page$attributes.adoc[]
+[[spring-cloud-eureka-server]]
+== Service Discovery: Eureka Server
+
+This section describes how to set up a Eureka server.
+
