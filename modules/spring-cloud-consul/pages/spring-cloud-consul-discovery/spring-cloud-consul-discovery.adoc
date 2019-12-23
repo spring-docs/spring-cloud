@@ -1,0 +1,5 @@
+include::page$attributes.adoc[]
+[[spring-cloud-consul-discovery]]
+== Service Discovery with Consul
+
+Service Discovery is one of the key tenets of a microservice based architecture. Trying to hand configure each client or some form of convention can be very difficult to do and can be very brittle.  Consul provides Service Discovery services via an https://www.consul.io/docs/agent/http.html[HTTP API] and https://www.consul.io/docs/agent/dns.html[DNS].  Spring Cloud Consul leverages the HTTP API for service registration and discovery.  This does not prevent non-Spring Cloud applications from leveraging the DNS interface.  Consul Agents servers are run in a https://www.consul.io/docs/internals/architecture.html[cluster] that communicates via a https://www.consul.io/docs/internals/gossip.html[gossip protocol] and uses the https://www.consul.io/docs/internals/consensus.html[Raft consensus protocol].

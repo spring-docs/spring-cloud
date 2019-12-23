@@ -1,0 +1,121 @@
+include::page$attributes.adoc[]
+
+=== Registering with Consul
+
+When a client registers with Consul, it provides meta-data about itself such as host and port, id, name and tags.  An HTTP https://www.consul.io/docs/agent/checks.html[Check] is created by default that Consul hits the `/health` endpoint every 10 seconds.  If the health check fails, the service instance is marked as critical.
+
+Example Consul client:
+
+[source,java,indent=0]
+----
+@SpringBootApplication
+@RestController
+public class Application {
+
+    @RequestMapping("/")
+    public String home() {
+        return "Hello world";
+    }
+
+    public static void main(String[] args) {
+        new SpringApplicationBuilder(Application.class).web(true).run(args);
+    }
+
+}
+----
+
+(i.e. utterly normal Spring Boot app).  If the Consul client is located somewhere other than `localhost:8500`, the configuration is required to locate the client. Example:
+
+.application.yml
+----
+spring:
+  cloud:
+    consul:
+      host: localhost
+      port: 8500
+----
+
+CAUTION: If you use xref:spring-cloud-consul-config:spring-cloud-consul-config.adoc#spring-cloud-consul-config[Spring Cloud Consul Config], the above values will need to be placed in `bootstrap.yml` instead of `application.yml`.
+
+The default service name, instance id and port, taken from the `Environment`, are `${spring.application.name}`, the Spring Context ID and `${server.port}` respectively.
+
+To disable the Consul Discovery Client you can set `spring.cloud.consul.discovery.enabled` to `false`. Consul Discovery Client will also be disabled when `spring.cloud.discovery.enabled` is set to `false`.
+
+To disable the service registration you can set `spring.cloud.consul.discovery.register` to `false`.
+
+==== Registering Management as a Separate Service
+
+When management server port is set to something different than the application port, by setting `management.server.port` property, management service will be registered as a separate service than the application service. For example:
+
+.application.yml
+----
+spring:
+  application:
+    name: myApp
+management:
+  server:
+    port: 4452
+----
+
+Above configuration will register following 2 services:
+
+* Application Service:
+
+----
+ID: myApp
+Name: myApp
+----
+
+* Management Service:
+
+----
+ID: myApp-management
+Name: myApp-management
+----
+
+Management service will inherit its `instanceId` and `serviceName` from the application service. For example:
+
+.application.yml
+----
+spring:
+  application:
+    name: myApp
+management:
+  server:
+    port: 4452
+spring:
+  cloud:
+    consul:
+      discovery:
+        instance-id: custom-service-id
+        serviceName: myprefix-${spring.application.name}
+----
+
+Above configuration will register following 2 services:
+
+* Application Service:
+
+----
+ID: custom-service-id
+Name: myprefix-myApp
+----
+
+* Management Service:
+
+----
+ID: custom-service-id-management
+Name: myprefix-myApp-management
+----
+
+Further customization is possible via following properties:
+
+----
+/** Port to register the management service under (defaults to management port) */
+spring.cloud.consul.discovery.management-port
+
+/** Suffix to use when registering management service (defaults to "management" */
+spring.cloud.consul.discovery.management-suffix
+
+/** Tags to use when registering management service (defaults to "management" */
+spring.cloud.consul.discovery.management-tags
+----
