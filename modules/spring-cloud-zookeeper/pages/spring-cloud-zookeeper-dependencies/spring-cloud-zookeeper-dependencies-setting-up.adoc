@@ -1,0 +1,157 @@
+include::page$attributes.adoc[]
+[[spring-cloud-zookeeper-dependencies-setting-up]]
+=== Setting up Zookeeper Dependencies
+
+Consider the following example of dependency representation:
+
+[source,yml,indent=0]
+.application.yml
+----
+spring.application.name: yourServiceName
+spring.cloud.zookeeper:
+  dependencies:
+    newsletter:
+      path: /path/where/newsletter/has/registered/in/zookeeper
+      loadBalancerType: ROUND_ROBIN
+      contentTypeTemplate: application/vnd.newsletter.$version+json
+      version: v1
+      headers:
+        header1:
+            - value1
+        header2:
+            - value2
+      required: false
+      stubs: org.springframework:foo:stubs
+    mailing:
+      path: /path/where/mailing/has/registered/in/zookeeper
+      loadBalancerType: ROUND_ROBIN
+      contentTypeTemplate: application/vnd.mailing.$version+json
+      version: v1
+      required: true
+----
+
+The next few sections go through each part of the dependency one by one. The root property
+name is `spring.cloud.zookeeper.dependencies`.
+
+[[spring-cloud-zookeeper-dependencies-setting-up-aliases]]
+==== Aliases
+
+Below the root property you have to represent each dependency as an alias. This is due to
+the constraints of Ribbon, which requires that the application ID be placed in the URL.
+Consequently, you cannot pass any complex path, suchas  `/myApp/myRoute/name`). The alias
+is the name you use instead of the `serviceId` for `DiscoveryClient`, `Feign`, or
+`RestTemplate`.
+
+In the previous examples, the aliases are `newsletter` and `mailing`. The following
+example shows Feign usage with a `newsletter` alias:
+
+[source,java,indent=0]
+----
+@FeignClient("newsletter")
+public interface NewsletterService {
+        @RequestMapping(method = RequestMethod.GET, value = "/newsletter")
+        String getNewsletters();
+}
+----
+
+==== Path
+
+The path is represented by the `path` YAML property and is the path under which the
+dependency is registered under Zookeeper. As described in the
+xref:spring-cloud-zookeeper-dependencies:spring-cloud-zookeeper-dependencies-setting-up.adoc#spring-cloud-zookeeper-dependencies-setting-up-aliases[previous section], Ribbon
+operates on URLs. As a result, this path is not compliant with its requirement.
+That is why Spring Cloud Zookeeper maps the alias to the proper path.
+
+==== Load Balancer Type
+
+The load balancer type is represented by `loadBalancerType` YAML property.
+
+If you know what kind of load-balancing strategy has to be applied when calling this
+particular dependency, you can provide it in the YAML file, and it is automatically
+applied. You can choose one of the following load balancing strategies:
+
+* STICKY: Once chosen, the instance is always called.
+* RANDOM: Picks an instance randomly.
+* ROUND_ROBIN: Iterates over instances over and over again.
+
+==== `Content-Type` Template and Version
+
+The `Content-Type` template and version are represented by the `contentTypeTemplate` and
+`version` YAML properties.
+
+If you version your API in the `Content-Type` header, you do not want to add this header
+to each of your requests. Also, if you want to call a new version of the API, you do not
+want to roam around your code to bump up the API version. That is why you can provide a
+`contentTypeTemplate` with a special `$version` placeholder. That placeholder will be filled by the value of the
+`version` YAML property. Consider the following example of a `contentTypeTemplate`:
+
+----
+application/vnd.newsletter.$version+json
+----
+
+Further consider the following `version`:
+
+----
+v1
+----
+
+The combination of `contentTypeTemplate` and version results in the creation of a
+`Content-Type` header for each request, as follows:
+
+----
+application/vnd.newsletter.v1+json
+----
+
+==== Default Headers
+
+Default headers are represented by the `headers` map in YAML.
+
+Sometimes, each call to a dependency requires setting up of some default headers. To not
+do that in code, you can set them up in the YAML file, as shown in the following example
+`headers` section:
+
+[source,yml,indent=0]
+----
+headers:
+    Accept:
+        - text/html
+        - application/xhtml+xml
+    Cache-Control:
+        - no-cache
+----
+
+That `headers` section results in adding the `Accept` and `Cache-Control` headers with
+appropriate list of values in your HTTP request.
+
+==== Required Dependencies
+
+Required dependencies are represented by `required` property in YAML.
+
+If one of your dependencies is required to be up when your application boots, you can set
+the `required: true` property in the YAML file.
+
+If your application cannot localize the required dependency during boot time, it throws an
+exception, and the Spring Context fails to set up. In other words, your application cannot
+start if the required dependency is not registered in Zookeeper.
+
+You can read more about Spring Cloud Zookeeper Presence Checker
+xref:spring-cloud-zookeeper-dependency-watcher:spring-cloud-zookeeper-dependency-watcher-presence-checker.adoc#spring-cloud-zookeeper-dependency-watcher-presence-checker[later in this document].
+
+==== Stubs
+
+You can provide a colon-separated path to the JAR containing stubs of the dependency, as
+shown in the following example:
+
+`stubs: org.springframework:myApp:stubs`
+
+where:
+
+* `org.springframework` is the `groupId`.
+* `myApp` is the `artifactId`.
+* `stubs` is the classifier. (Note that `stubs` is the default value.)
+
+Because `stubs` is the default classifier, the preceding example is equal to the following
+example:
+
+`stubs: org.springframework:myApp`
+

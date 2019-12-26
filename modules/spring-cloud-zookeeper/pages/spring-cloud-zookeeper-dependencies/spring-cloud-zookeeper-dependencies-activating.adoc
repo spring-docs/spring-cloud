@@ -1,0 +1,10 @@
+include::page$attributes.adoc[]
+[[spring-cloud-zookeeper-dependencies-activating]]
+=== Activating Zookeeper Dependencies
+
+Including a dependency on
+`org.springframework.cloud:spring-cloud-starter-zookeeper-discovery` enables
+autoconfiguration that sets up Spring Cloud Zookeeper Dependencies. Even if you provide
+the dependencies in your properties, you can turn off the dependencies. To do so, set the
+`spring.cloud.zookeeper.dependency.enabled` property to false (it defaults to `true`).
+

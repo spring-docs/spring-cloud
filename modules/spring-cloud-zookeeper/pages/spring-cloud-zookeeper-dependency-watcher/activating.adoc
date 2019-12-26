@@ -1,0 +1,7 @@
+include::page$attributes.adoc[]
+
+=== Activating
+
+Spring Cloud Zookeeper Dependencies functionality needs to be enabled for you to use the
+Dependency Watcher mechanism.
+// TODO: How can the reader do that?

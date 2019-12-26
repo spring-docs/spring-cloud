@@ -1,0 +1,17 @@
+include::page$attributes.adoc[]
+
+=== Registering a Listener
+
+To register a listener, you must implement an interface called
+`org.springframework.cloud.zookeeper.discovery.watcher.DependencyWatcherListener` and
+register it as a bean. The interface gives you one method:
+
+[source,java,indent=0]
+----
+void stateChanged(String dependencyName, DependencyState newState);
+----
+
+If you want to register a listener for a particular dependency, the `dependencyName` would
+be the discriminator for your concrete implementation. `newState` provides you with
+information about whether your dependency has changed to `CONNECTED` or `DISCONNECTED`.
+

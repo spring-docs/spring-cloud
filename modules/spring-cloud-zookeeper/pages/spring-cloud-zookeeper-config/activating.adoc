@@ -1,0 +1,10 @@
+include::page$attributes.adoc[]
+
+=== Activating
+
+Including a dependency on
+`org.springframework.cloud:spring-cloud-starter-zookeeper-config` enables
+autoconfiguration that sets up Spring Cloud Zookeeper Config.
+
+CAUTION: When working with version 3.4 of Zookeeper you need to change
+the way you include the dependency as described xref:spring-cloud-zookeeper-install:spring-cloud-zookeeper-install.adoc#spring-cloud-zookeeper-install[here].

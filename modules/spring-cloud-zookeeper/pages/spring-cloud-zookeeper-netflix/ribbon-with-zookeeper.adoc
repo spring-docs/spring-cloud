@@ -1,0 +1,8 @@
+include::page$attributes.adoc[]
+
+=== Ribbon with Zookeeper
+
+Spring Cloud Zookeeper provides an implementation of Ribbon's `ServerList`. When you use
+the  `spring-cloud-starter-zookeeper-discovery`, Ribbon is autoconfigured to use the
+`ZookeeperServerList` by default.
+

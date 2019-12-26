@@ -1,0 +1,24 @@
+include::page$attributes.adoc[]
+
+=== Customizing
+
+Zookeeper Config may be customized by setting the following properties:
+
+[source,yml,indent=0]
+.bootstrap.yml
+----
+spring:
+  cloud:
+    zookeeper:
+      config:
+        enabled: true
+        root: configuration
+        defaultContext: apps
+        profileSeparator: '::'
+----
+
+* `enabled`: Setting this value to `false` disables Zookeeper Config.
+* `root`: Sets the base namespace for configuration values.
+* `defaultContext`: Sets the name used by all applications.
+* `profileSeparator`: Sets the value of the separator used to separate the profile name in
+property sources with profiles.

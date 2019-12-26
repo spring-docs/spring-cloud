@@ -1,0 +1,2 @@
+:sc-ext: java
+:project-full-name: Spring Cloud Zookeeper

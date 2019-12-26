@@ -1,0 +1,10 @@
+include::page$attributes.adoc[]
+[[spring-cloud-zookeeper-discovery]]
+== Service Discovery with Zookeeper
+
+Service Discovery is one of the key tenets of a microservice based architecture. Trying to
+hand-configure each client or some form of convention can be difficult to do and can be
+brittle. https://curator.apache.org[Curator](A Java library for Zookeeper) provides Service
+Discovery through a https://curator.apache.org/curator-x-discovery/[Service Discovery
+Extension]. Spring Cloud Zookeeper uses this extension for service registration and
+discovery.

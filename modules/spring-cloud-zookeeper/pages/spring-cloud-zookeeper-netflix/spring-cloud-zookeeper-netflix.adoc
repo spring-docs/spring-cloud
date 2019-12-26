@@ -1,0 +1,7 @@
+include::page$attributes.adoc[]
+[[spring-cloud-zookeeper-netflix]]
+== Using Spring Cloud Zookeeper with Spring Cloud Netflix Components
+
+Spring Cloud Netflix supplies useful tools that work regardless of which `DiscoveryClient`
+implementation you use. Feign, Turbine, Ribbon, and Zuul all work with Spring Cloud
+Zookeeper.

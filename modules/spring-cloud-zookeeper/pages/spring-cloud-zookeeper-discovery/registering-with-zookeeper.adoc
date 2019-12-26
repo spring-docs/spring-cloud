@@ -1,0 +1,54 @@
+include::page$attributes.adoc[]
+
+=== Registering with Zookeeper
+
+When a client registers with Zookeeper, it provides metadata (such as host and port, ID,
+and name) about itself.
+
+The following example shows a Zookeeper client:
+
+[source,java,indent=0]
+----
+@SpringBootApplication
+@RestController
+public class Application {
+
+    @RequestMapping("/")
+    public String home() {
+        return "Hello world";
+    }
+
+    public static void main(String[] args) {
+        new SpringApplicationBuilder(Application.class).web(true).run(args);
+    }
+
+}
+----
+
+NOTE: The preceding example is a normal Spring Boot application.
+
+If Zookeeper is located somewhere other than `localhost:2181`, the configuration must
+provide the location of the server, as shown in the following example:
+
+[source,yml,indent=0]
+.application.yml
+----
+spring:
+  cloud:
+    zookeeper:
+      connect-string: localhost:2181
+----
+
+CAUTION: If you use xref:spring-cloud-zookeeper-config:spring-cloud-zookeeper-config.adoc#spring-cloud-zookeeper-config[Spring Cloud Zookeeper Config], the
+values shown in the preceding example need to be in `bootstrap.yml` instead of
+`application.yml`.
+
+The default service name, instance ID, and port (taken from the `Environment`) are
+`${spring.application.name}`, the Spring Context ID, and `${server.port}`, respectively.
+
+Having `spring-cloud-starter-zookeeper-discovery` on the classpath makes the app into both
+a Zookeeper "`service`" (that is, it registers itself) and a "`client`" (that is, it can
+query Zookeeper to locate other services).
+
+If you would like to disable the Zookeeper Discovery Client, you can set
+`spring.cloud.zookeeper.discovery.enabled` to `false`.

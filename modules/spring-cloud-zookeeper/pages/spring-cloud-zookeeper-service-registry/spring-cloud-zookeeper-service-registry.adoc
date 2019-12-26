@@ -1,0 +1,26 @@
+include::page$attributes.adoc[]
+[[spring-cloud-zookeeper-service-registry]]
+== Spring Cloud Zookeeper and Service Registry
+
+Spring Cloud Zookeeper implements the `ServiceRegistry` interface, letting developers
+register arbitrary services in a programmatic way.
+
+The `ServiceInstanceRegistration` class offers a `builder()` method to create a
+`Registration` object that can be used by the `ServiceRegistry`, as shown in the following
+example:
+
+[source,java,indent=0]
+----
+@Autowired
+private ZookeeperServiceRegistry serviceRegistry;
+
+public void registerThings() {
+    ZookeeperRegistration registration = ServiceInstanceRegistration.builder()
+            .defaultUriSpec()
+            .address("anyUrl")
+            .port(10)
+            .name("/a/b/c/d/anotherservice")
+            .build();
+    this.serviceRegistry.register(registration);
+}
+----

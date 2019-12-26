@@ -1,0 +1,28 @@
+include::page$attributes.adoc[]
+[[spring-cloud-zookeeper-dependencies-configuring]]
+=== Configuring Spring Cloud Zookeeper Dependencies
+
+You can set the following properties to enable or disable parts of Zookeeper Dependencies
+functionalities:
+
+* `spring.cloud.zookeeper.dependencies`: If you do not set this property, you cannot use
+Zookeeper Dependencies.
+* `spring.cloud.zookeeper.dependency.ribbon.enabled` (enabled by default): Ribbon requires
+either explicit global configuration or a particular one for a dependency. By turning on
+this property, runtime load balancing strategy resolution is possible, and you can use the
+`loadBalancerType` section of the Zookeeper Dependencies. The configuration that needs
+this property has an implementation of `LoadBalancerClient` that delegates to the
+`ILoadBalancer` presented in the next bullet.
+* `spring.cloud.zookeeper.dependency.ribbon.loadbalancer` (enabled by default): Thanks to
+this property, the custom `ILoadBalancer` knows that the part of the URI passed to Ribbon
+might actually be the alias that has to be resolved to a proper path in Zookeeper. Without
+this property, you cannot register applications under nested paths.
+* `spring.cloud.zookeeper.dependency.headers.enabled` (enabled by default): This property
+registers a `RibbonClient` that automatically appends appropriate headers and content
+types with their versions, as presented in the Dependency configuration. Without this
+setting, those two parameters do not work.
+* `spring.cloud.zookeeper.dependency.resttemplate.enabled` (enabled by default): When
+enabled, this property modifies the request headers of a `@LoadBalanced`-annotated
+`RestTemplate` such that it passes headers and content type with the version set in
+dependency configuration. Without this setting, those two parameters do not work.
+

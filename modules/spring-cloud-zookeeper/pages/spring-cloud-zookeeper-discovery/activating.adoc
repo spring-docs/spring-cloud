@@ -1,0 +1,13 @@
+include::page$attributes.adoc[]
+
+=== Activating
+
+Including a dependency on
+`org.springframework.cloud:spring-cloud-starter-zookeeper-discovery` enables
+autoconfiguration that sets up Spring Cloud Zookeeper Discovery.
+
+NOTE: For web functionality, you still need to include
+`org.springframework.boot:spring-boot-starter-web`.
+
+CAUTION: When working with version 3.4 of Zookeeper you need to change
+the way you include the dependency as described xref:spring-cloud-zookeeper-install:spring-cloud-zookeeper-install.adoc#spring-cloud-zookeeper-install[here].
