@@ -1,0 +1,41 @@
+include::page$attributes.adoc[]
+[[spring-cloud-feign-inheritance]]
+=== Feign Inheritance Support
+
+Feign supports boilerplate apis via single-inheritance interfaces.
+This allows grouping common operations into convenient base interfaces.
+
+.UserService.java
+[source,java,indent=0]
+----
+public interface UserService {
+
+    @RequestMapping(method = RequestMethod.GET, value ="/users/{id}")
+    User getUser(@PathVariable("id") long id);
+}
+----
+
+.UserResource.java
+[source,java,indent=0]
+----
+@RestController
+public class UserResource implements UserService {
+
+}
+----
+
+.UserClient.java
+[source,java,indent=0]
+----
+package project.user;
+
+@FeignClient("users")
+public interface UserClient extends UserService {
+
+}
+----
+
+NOTE: It is generally not advisable to share an interface between a
+server and a client. It introduces tight coupling, and also actually
+doesn't work with Spring MVC in its current form (method parameter
+mapping is not inherited).

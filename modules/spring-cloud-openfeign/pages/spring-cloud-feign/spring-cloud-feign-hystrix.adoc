@@ -1,0 +1,24 @@
+include::page$attributes.adoc[]
+[[spring-cloud-feign-hystrix]]
+=== Feign Hystrix Support
+
+If Hystrix is on the classpath and `feign.hystrix.enabled=true`, Feign will wrap all methods with a circuit breaker. Returning a `com.netflix.hystrix.HystrixCommand` is also available. This lets you use reactive patterns (with a call to `.toObservable()` or `.observe()` or asynchronous use (with a call to `.queue()`).
+
+To disable Hystrix support on a per-client basis create a vanilla `Feign.Builder` with the "prototype" scope, e.g.:
+
+[source,java,indent=0]
+----
+@Configuration
+public class FooConfiguration {
+    	@Bean
+	@Scope("prototype")
+	public Feign.Builder feignBuilder() {
+		return Feign.builder();
+	}
+}
+----
+
+WARNING:  Prior to the Spring Cloud Dalston release, if Hystrix was on the classpath Feign would have wrapped
+all methods in a circuit breaker by default.  This default behavior was changed in Spring Cloud Dalston in
+favor for an opt-in approach.
+

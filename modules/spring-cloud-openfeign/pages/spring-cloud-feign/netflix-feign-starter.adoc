@@ -1,0 +1,54 @@
+include::page$attributes.adoc[]
+[[netflix-feign-starter]]
+=== How to Include Feign
+
+To include Feign in your project use the starter with group `org.springframework.cloud`
+and artifact id `spring-cloud-starter-openfeign`. See the https://projects.spring.io/spring-cloud/[Spring Cloud Project page]
+for details on setting up your build system with the current Spring Cloud Release Train.
+
+Example spring boot app
+
+[source,java,indent=0]
+----
+@SpringBootApplication
+@EnableFeignClients
+public class Application {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+
+}
+----
+
+.StoreClient.java
+[source,java,indent=0]
+----
+@FeignClient("stores")
+public interface StoreClient {
+    @RequestMapping(method = RequestMethod.GET, value = "/stores")
+    List<Store> getStores();
+
+    @RequestMapping(method = RequestMethod.POST, value = "/stores/{storeId}", consumes = "application/json")
+    Store update(@PathVariable("storeId") Long storeId, Store store);
+}
+----
+
+In the `@FeignClient` annotation the String value ("stores" above) is an arbitrary client name, which is used to create either a https://github.com/Netflix/ribbon[Ribbon] load-balancer (see <<spring-cloud-ribbon,below for details of Ribbon support>>) or https://github.com/spring-cloud/spring-cloud-commons/blob/master/spring-cloud-commons/src/main/java/org/springframework/cloud/client/loadbalancer/reactive/ReactiveLoadBalancer.java[Spring Cloud LoadBalancer].
+You can also specify a URL using the `url` attribute
+(absolute value or just a hostname). The name of the bean in the
+application context is the fully qualified name of the interface.
+To specify your own alias value you can use the `qualifier` value
+of the `@FeignClient` annotation.
+
+The load-balancer client above will want to discover the physical addresses
+for the "stores" service. If your application is a Eureka client then
+it will resolve the service in the Eureka service registry. If you
+don't want to use Eureka, you can simply configure a list of servers
+in your external configuration (see
+<<spring-cloud-ribbon-without-eureka,above for example>>).
+
+WARNING: In order to maintain backward compatibility, is used as the default load-balancer implementation.
+However, Spring Cloud Netflix Ribbon is now in maintenance mode, so we recommend using Spring Cloud LoadBalancer instead.
+To do this, set the value of `spring.cloud.loadbalancer.ribbon.enabled` to `false`.
+
