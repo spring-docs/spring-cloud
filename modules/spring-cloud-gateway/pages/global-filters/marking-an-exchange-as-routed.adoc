@@ -1,0 +1,11 @@
+include::page$attributes.adoc[]
+
+=== Marking An Exchange As Routed
+
+After the gateway has routed a `ServerWebExchange`, it marks that exchange as "`routed`" by adding `gatewayAlreadyRouted`
+to the exchange attributes. Once a request has been marked as routed, other routing filters will not route the request again,
+essentially skipping the filter. There are convenience methods that you can use to mark an exchange as routed
+or check if an exchange has already been routed.
+
+* `ServerWebExchangeUtils.isAlreadyRouted` takes a `ServerWebExchange` object and checks if it has been "`routed`".
+* `ServerWebExchangeUtils.setAlreadyRouted` takes a `ServerWebExchange` object and marks it as "`routed`".

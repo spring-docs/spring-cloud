@@ -1,0 +1,24 @@
+include::page$attributes.adoc[]
+
+=== The Cookie Route Predicate Factory
+
+The cookie route predicate factory takes two parameters, the cookie name and a regular expression.
+This predicate matches cookies that have the given name and whose values match the regular expression.
+The following example configures a cookie route predicate factory:
+
+.application.yml
+====
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: cookie_route
+        uri: https://example.org
+        predicates:
+        - Cookie=chocolate, ch.p
+----
+====
+
+This route matches requests that have a cookie named `chocolate` whose value matches the `ch.p` regular expression.

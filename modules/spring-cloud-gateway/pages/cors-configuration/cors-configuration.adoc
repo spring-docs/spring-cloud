@@ -1,0 +1,27 @@
+include::page$attributes.adoc[]
+
+== CORS Configuration
+
+You can configure the gateway to control CORS behavior. The "`global`" CORS configuration is a map of URL patterns to https://docs.spring.io/spring/docs/5.0.x/javadoc-api/org/springframework/web/cors/CorsConfiguration.html[Spring Framework `CorsConfiguration`].
+The following example configures CORS:
+
+.application.yml
+====
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "https://docs.spring.io"
+            allowedMethods:
+            - GET
+----
+====
+
+In the preceding example, CORS requests are allowed from requests that originate from `docs.spring.io` for all GET requested paths.
+
+To provide the same CORS configuration to requests that are not handled by some gateway route predicate, set the `spring.cloud.gateway.globalcors.add-to-simple-url-handler-mapping` property  to `true`.
+This is useful when you try to support CORS preflight requests and your route predicate does not evalute to `true` because the HTTP method is `options`.

@@ -1,0 +1,38 @@
+include::page$attributes.adoc[]
+
+=== The Path Route Predicate Factory
+
+The Path Route Predicate Factory takes two parameters: a list of Spring `PathMatcher` patterns and an optional flag called `matchOptionalTrailingSeparator`.
+The following example configures a path route predicate:
+
+.application.yml
+====
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: host_route
+        uri: https://example.org
+        predicates:
+        - Path=/red/{segment},/blue/{segment}
+----
+====
+
+This route matches if the request path was, for example: `/red/1` or `/red/blue` or `/blue/green`.
+
+This predicate extracts the URI template variables (such as `segment`, defined in the preceding example) as a map of names and values and places it in the `ServerWebExchange.getAttributes()` with a key defined in `ServerWebExchangeUtils.URI_TEMPLATE_VARIABLES_ATTRIBUTE`.
+Those values are then available for use by xref:actuator-api:retrieving-route-filters.adoc#gateway-route-filters[`GatewayFilter` factories]
+
+A utility method (called `get`) is available to make access to these variables easier.
+The following example shows how to use the `get` method:
+
+====
+[source,java]
+----
+Map<String, String> uriVariables = ServerWebExchangeUtils.getPathPredicateVariables(exchange);
+
+String segment = uriVariables.get("segment");
+----
+====

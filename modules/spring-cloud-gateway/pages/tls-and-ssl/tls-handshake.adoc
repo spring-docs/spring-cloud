@@ -1,0 +1,23 @@
+include::page$attributes.adoc[]
+
+=== TLS Handshake
+
+The gateway maintains a client pool that it uses to route to backends.
+When communicating over HTTPS, the client initiates a TLS handshake.
+A number of timeouts are associated with this handshake.
+You can configure these timeouts can be configured (defaults shown) as follows:
+
+.application.yml
+====
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      httpclient:
+        ssl:
+          handshake-timeout-millis: 10000
+          close-notify-flush-timeout-millis: 3000
+          close-notify-read-timeout-millis: 0
+----
+====

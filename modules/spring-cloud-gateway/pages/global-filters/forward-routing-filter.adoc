@@ -1,0 +1,8 @@
+include::page$attributes.adoc[]
+
+=== Forward Routing Filter
+
+The `ForwardRoutingFilter` looks for a URI in the exchange attribute `ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR`.
+If the URL has a `forward` scheme (such as `forward:///localendpoint`), it uses the Spring `DispatcherHandler` to handle the request.
+The path part of the request URL is overridden with the path in the forward URL.
+The unmodified original URL is appended to the list in the `ServerWebExchangeUtils.GATEWAY_ORIGINAL_REQUEST_URL_ATTR` attribute.

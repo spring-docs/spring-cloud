@@ -1,0 +1,6 @@
+include::page$attributes.adoc[]
+
+=== Refreshing the Route Cache
+
+To clear the routes cache, make a `POST` request to `/actuator/gateway/refresh`.
+The request returns a 200 without a response body.

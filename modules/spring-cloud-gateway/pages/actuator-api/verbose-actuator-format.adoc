@@ -1,0 +1,38 @@
+include::page$attributes.adoc[]
+
+=== Verbose Actuator Format
+
+A new, more verbose format has been added to Spring Cloud Gateway.
+It adds more detail to each route, letting you view the predicates and filters associated with each route along with any configuration that is available.
+The following example configures `/actuator/gateway/routes`:
+
+====
+[source,json]
+----
+[
+  {
+    "predicate": "(Hosts: [**.addrequestheader.org] && Paths: [/headers], match trailing slash: true)",
+    "route_id": "add_request_header_test",
+    "filters": [
+      "[[AddResponseHeader X-Response-Default-Foo = 'Default-Bar'], order = 1]",
+      "[[AddRequestHeader X-Request-Foo = 'Bar'], order = 1]",
+      "[[PrefixPath prefix = '/httpbin'], order = 2]"
+    ],
+    "uri": "lb://testservice",
+    "order": 0
+  }
+]
+----
+====
+
+This feature is enabled by default. To disable it, set the following property:
+
+.application.properties
+====
+[source,properties]
+----
+spring.cloud.gateway.actuator.verbose.enabled=false
+----
+====
+
+This will default to `true` in a future release.

@@ -1,0 +1,7 @@
+include::page$attributes.adoc[]
+
+=== The Netty Write Response Filter
+
+The `NettyWriteResponseFilter` runs if there is a Netty `HttpClientResponse` in the `ServerWebExchangeUtils.CLIENT_RESPONSE_ATTR` exchange attribute.
+It runs after all other filters have completed and writes the proxy response back to the gateway client response.
+(There is also an experimental `WebClientWriteResponseFilter` that performs the same function but does not require Netty.)

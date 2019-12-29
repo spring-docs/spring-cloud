@@ -1,0 +1,24 @@
+include::page$attributes.adoc[]
+
+=== The Header Route Predicate Factory
+
+The header route predicate factory takes two parameters, the header name and a regular expression.
+This predicate matches with a header that has the given name whose value matches the regular expression.
+The following example configures a header route predicate:
+
+.application.yml
+====
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: header_route
+        uri: https://example.org
+        predicates:
+        - Header=X-Request-Id, \d+
+----
+====
+
+This route matches if the request has a header named `X-Request-Id` whose value matches the `\d+` regular expression (that is, it has a value of one or more digits).

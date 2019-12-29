@@ -1,0 +1,39 @@
+include::page$attributes.adoc[]
+
+=== The Query Route Predicate Factory
+
+The query route predicate factory takes two parameters: a required `param` and an optional `regexp`.
+The following example configures a query route predicate:
+
+.application.yml
+====
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: query_route
+        uri: https://example.org
+        predicates:
+        - Query=green
+----
+====
+
+The preceding route matches if the request contained a `green` query parameter.
+
+.application.yml
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: query_route
+        uri: https://example.org
+        predicates:
+        - Query=red, gree.
+----
+
+The preceding route matches if the request contained a `red` query parameter whose value matched the `gree.` regexp, so `green` and `greet` would match.
+

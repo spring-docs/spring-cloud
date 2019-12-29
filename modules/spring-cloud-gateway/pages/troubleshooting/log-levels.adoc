@@ -1,0 +1,12 @@
+include::page$attributes.adoc[]
+
+=== Log Levels
+
+The following loggers may contain valuable troubleshooting information at the `DEBUG` and `TRACE` levels:
+
+- `org.springframework.cloud.gateway`
+- `org.springframework.http.server.reactive`
+- `org.springframework.web.reactive`
+- `org.springframework.boot.autoconfigure.web`
+- `reactor.netty`
+- `redisratelimiter`

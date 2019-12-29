@@ -1,0 +1,5 @@
+include::page$attributes.adoc[]
+[[troubleshooting]]
+== Troubleshooting
+
+This section covers common problems that may arise when you use Spring Cloud Gateway.

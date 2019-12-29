@@ -1,0 +1,50 @@
+include::page$attributes.adoc[]
+
+=== Retrieving Route Filters
+
+This section details how to retrieve route filters, including:
+
+* xref:actuator-api:retrieving-route-filters.adoc#gateway-global-filters[gateway-global-filters]
+* xref:actuator-api:retrieving-route-filters.adoc#gateway-route-filters[gateway-route-filters]
+
+[[gateway-global-filters]]
+==== Global Filters
+
+To retrieve the xref:global-filters:global-filters.adoc#global-filters[global filters] applied to all routes, make a `GET` request to `/actuator/gateway/globalfilters`. The resulting response is similar to the following:
+
+====
+----
+{
+  "org.springframework.cloud.gateway.filter.LoadBalancerClientFilter@77856cc5": 10100,
+  "org.springframework.cloud.gateway.filter.RouteToRequestUrlFilter@4f6fd101": 10000,
+  "org.springframework.cloud.gateway.filter.NettyWriteResponseFilter@32d22650": -1,
+  "org.springframework.cloud.gateway.filter.ForwardRoutingFilter@106459d9": 2147483647,
+  "org.springframework.cloud.gateway.filter.NettyRoutingFilter@1fbd5e0": 2147483647,
+  "org.springframework.cloud.gateway.filter.ForwardPathFilter@33a71d23": 0,
+  "org.springframework.cloud.gateway.filter.AdaptCachedBodyGlobalFilter@135064ea": 2147483637,
+  "org.springframework.cloud.gateway.filter.WebsocketRoutingFilter@23c05889": 2147483646
+}
+----
+====
+
+The response contains the details of the global filters that are in place.
+For each global filter, there is a string representation of the filter object (for example, `org.springframework.cloud.gateway.filter.LoadBalancerClientFilter@77856cc5`) and the corresponding xref:global-filters:gateway-combined-global-filter-and-gatewayfilter-ordering.adoc#gateway-combined-global-filter-and-gatewayfilter-ordering[order] in the filter chain.}
+
+[[gateway-route-filters]]
+==== Route Filters
+To retrieve the xref:gatewayfilter-factories:gatewayfilter-factories.adoc#gatewayfilter-factories[`GatewayFilter` factories] applied to routes, make a `GET` request to `/actuator/gateway/routefilters`.
+The resulting response is similar to the following:
+
+====
+----
+{
+  "[AddRequestHeaderGatewayFilterFactory@570ed9c configClass = AbstractNameValueGatewayFilterFactory.NameValueConfig]": null,
+  "[SecureHeadersGatewayFilterFactory@fceab5d configClass = Object]": null,
+  "[SaveSessionGatewayFilterFactory@4449b273 configClass = Object]": null
+}
+----
+====
+
+The response contains the details of the `GatewayFilter` factories applied to any particular route.
+For each factory there is a string representation of the corresponding object (for example, `[SecureHeadersGatewayFilterFactory@fceab5d configClass = Object]`).
+Note that the `null` value is due to an incomplete implementation of the endpoint controller, because it tries to set the order of the object in the filter chain, which does not apply to a `GatewayFilter` factory object.

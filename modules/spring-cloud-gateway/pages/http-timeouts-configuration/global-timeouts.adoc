@@ -1,0 +1,17 @@
+include::page$attributes.adoc[]
+
+=== Global timeouts
+To configure Global http timeouts: +
+`connect-timeout` must be specified in milliseconds. +
+`response-timeout` must be specified as a java.time.Duration
+
+.global http timeouts example
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 5s
+----

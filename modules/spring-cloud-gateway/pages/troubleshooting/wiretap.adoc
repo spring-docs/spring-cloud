@@ -1,0 +1,7 @@
+include::page$attributes.adoc[]
+
+=== Wiretap
+
+The Reactor Netty `HttpClient` and `HttpServer` can have wiretap enabled.
+When combined with setting the `reactor.netty` log level to `DEBUG` or `TRACE`, it enables the logging of information, such as headers and bodies sent and received across the wire.
+To enable wiretap, set `spring.cloud.gateway.httpserver.wiretap=true` or `spring.cloud.gateway.httpclient.wiretap=true` for the `HttpServer` and `HttpClient`, respectively.

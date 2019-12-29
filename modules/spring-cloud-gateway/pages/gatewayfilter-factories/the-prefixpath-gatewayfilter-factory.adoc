@@ -1,0 +1,24 @@
+include::page$attributes.adoc[]
+
+=== The `PrefixPath` `GatewayFilter` Factory
+
+The `PrefixPath` `GatewayFilter` factory takes a single `prefix` parameter.
+The following example configures a `PrefixPath` `GatewayFilter`:
+
+.application.yml
+====
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: prefixpath_route
+        uri: https://example.org
+        filters:
+        - PrefixPath=/mypath
+----
+====
+
+This will prefix `/mypath` to the path of all matching requests.
+So a request to `/hello` would be sent to `/mypath/hello`.

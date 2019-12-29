@@ -1,0 +1,9 @@
+include::page$attributes.adoc[]
+
+== Global Filters
+
+The `GlobalFilter` interface has the same signature as `GatewayFilter`.
+These are special filters that are conditionally applied to all routes.
+
+NOTE: This interface and its usage are subject to change in future milestone releases.
+

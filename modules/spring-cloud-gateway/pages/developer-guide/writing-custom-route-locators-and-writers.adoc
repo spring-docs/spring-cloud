@@ -1,0 +1,5 @@
+include::page$attributes.adoc[]
+
+=== Writing Custom Route Locators and Writers
+
+TODO: document writing Custom Route Locators and Writers

@@ -1,0 +1,9 @@
+include::page$attributes.adoc[]
+
+=== The `RouteToRequestUrl` Filter
+
+If there is a `Route` object in the `ServerWebExchangeUtils.GATEWAY_ROUTE_ATTR` exchange attribute, the `RouteToRequestUrlFilter` runs.
+It creates a new URI, based off of the request URI but updated with the URI attribute of the `Route` object.
+The new URI is placed in the `ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR` exchange attribute`.
+
+If the URI has a scheme prefix, such as `lb:ws://serviceid`, the `lb` scheme is stripped from the URI and placed in the `ServerWebExchangeUtils.GATEWAY_SCHEME_PREFIX_ATTR` for use later in the filter chain.

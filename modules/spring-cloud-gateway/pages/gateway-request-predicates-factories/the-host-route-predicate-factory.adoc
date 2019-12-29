@@ -1,0 +1,31 @@
+include::page$attributes.adoc[]
+
+=== The Host Route Predicate Factory
+
+The host route predicate factory takes one parameter: a list of host name patterns.
+The pattern is an Ant-style pattern with `.` as the separator.
+This predicates matches the `Host` header that matches the pattern.
+The following example configures a host route predicate:
+
+.application.yml
+====
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: host_route
+        uri: https://example.org
+        predicates:
+        - Host=**.somehost.org,**.anotherhost.org
+----
+====
+
+URI template variables (such as `{sub}.myhost.org`) are supported as well.
+
+This route matches if the request has a `Host` header with a value of `www.somehost.org` or `beta.somehost.org` or `www.anotherhost.org`.
+
+This predicate extracts the URI template variables (such as `sub`, defined in the preceding example) as a map of names and values and places it in the `ServerWebExchange.getAttributes()` with a key defined in `ServerWebExchangeUtils.URI_TEMPLATE_VARIABLES_ATTRIBUTE`.
+Those values are then available for use by xref:actuator-api:retrieving-route-filters.adoc#gateway-route-filters[`GatewayFilter` factories]
+

@@ -1,0 +1,8 @@
+include::page$attributes.adoc[]
+[[gateway-request-predicates-factories]]
+== Route Predicate Factories
+
+Spring Cloud Gateway matches routes as part of the Spring WebFlux `HandlerMapping` infrastructure.
+Spring Cloud Gateway includes many built-in route predicate factories.
+All of these predicates match on different attributes of the HTTP request.
+You can combine multiple route predicate factories with logical `and` statements.

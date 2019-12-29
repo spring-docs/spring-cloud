@@ -1,0 +1,24 @@
+include::page$attributes.adoc[]
+
+=== The Before Route Predicate Factory
+
+The before route predicate factory takes one parameter, a `datetime`.
+This predicate matches requests that happen before the specified `datetime`.
+The following example configures a before route predicate:
+
+.application.yml
+====
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: before_route
+        uri: https://example.org
+        predicates:
+        - Before=2017-01-20T17:42:47.789-07:00[America/Denver]
+----
+====
+
+This route matches any request made before Jan 20, 2017 17:42 Mountain Time (Denver).

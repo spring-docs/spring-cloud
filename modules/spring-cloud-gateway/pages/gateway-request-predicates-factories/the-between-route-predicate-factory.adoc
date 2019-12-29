@@ -1,0 +1,26 @@
+include::page$attributes.adoc[]
+
+=== The Between Route Predicate Factory
+
+The between route predicate factory takes two parameters, `datetime1` and `datetime2`.
+This predicate matches requests that happen after `datetime1` and before `datetime2`.
+The `datetime2` parameter must be after `datetime1`.
+The following example configures a between route predicate:
+
+.application.yml
+====
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: between_route
+        uri: https://example.org
+        predicates:
+        - Between=2017-01-20T17:42:47.789-07:00[America/Denver], 2017-01-21T17:42:47.789-07:00[America/Denver]
+----
+====
+
+This route matches any request made after Jan 20, 2017 17:42 Mountain Time (Denver) and before Jan 21, 2017 17:42 Mountain Time (Denver).
+This could be useful for maintenance windows.

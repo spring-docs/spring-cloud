@@ -1,0 +1,40 @@
+include::page$attributes.adoc[]
+
+=== Recap: The List of All endpoints
+
+The folloiwng table below summarizes the Spring Cloud Gateway actuator endpoints (note that each endpoint has `/actuator/gateway` as the base-path):
+
+[cols="2,2,5"]
+|===
+| ID | HTTP Method | Description
+
+|`globalfilters`
+|GET
+| Displays the list of global filters applied to the routes.
+
+|`routefilters`
+|GET
+| Displays the list of `GatewayFilter` factories applied to a particular route.
+
+|`refresh`
+|POST
+| Clears the routes cache.
+
+|`routes`
+|GET
+| Displays the list of routes defined in the gateway.
+
+|`routes/{id}`
+|GET
+| Displays information about a particular route.
+
+|`routes/{id}`
+|POST
+| Adds a new route to the gateway.
+
+|`routes/{id}`
+|DELETE
+| Removes an existing route from the gateway.
+
+|===
+

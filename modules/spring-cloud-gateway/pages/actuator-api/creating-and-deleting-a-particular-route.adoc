@@ -1,0 +1,7 @@
+include::page$attributes.adoc[]
+
+=== Creating and Deleting a Particular Route
+
+To create a route, make a `POST` request to `/gateway/routes/{id_route_to_create}` with a JSON body that specifies the fields of the route (see xref:actuator-api:gateway-retrieving-information-about-a-particular-route.adoc#gateway-retrieving-information-about-a-particular-route[gateway-retrieving-information-about-a-particular-route]).
+
+To delete a route, make a `DELETE` request to `/gateway/routes/{id_route_to_delete}`.

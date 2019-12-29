@@ -1,0 +1,26 @@
+include::page$attributes.adoc[]
+
+=== Modify a Response Body `GatewayFilter` Factory
+
+CAUTION: This filter is considered BETA and the API may change in the future.
+
+You can use this filter to modify the response body before it is sent back to the client.
+
+NOTE: This filter can be configured only by using the Java DSL.
+
+The following listing shows how to modify a response body `GatewayFilter`:
+
+====
+[source,java]
+----
+@Bean
+public RouteLocator routes(RouteLocatorBuilder builder) {
+    return builder.routes()
+        .route("rewrite_response_upper", r -> r.host("*.rewriteresponseupper.org")
+            .filters(f -> f.prefixPath("/httpbin")
+        		.modifyResponseBody(String.class, String.class,
+        		    (exchange, s) -> Mono.just(s.toUpperCase()))).uri(uri)
+        .build();
+}
+----
+====

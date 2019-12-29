@@ -1,0 +1,34 @@
+include::page$attributes.adoc[]
+[[reactive-loadbalancer-client-filter]]
+=== The `ReactiveLoadBalancerClientFilter`
+
+The `ReactiveLoadBalancerClientFilter` looks for a URI in the exchange attribute named `ServerWebExchangeUtils.GATEWAY_REQUEST_URL_ATTR`.
+If the URL has a `lb` scheme (such as `lb://myservice`), it uses the Spring Cloud `ReactorLoadBalancer` to resolve the name (`myservice` in this example) to an actual host and port and replaces the URI in the same attribute.
+The unmodified original URL is appended to the list in the `ServerWebExchangeUtils.GATEWAY_ORIGINAL_REQUEST_URL_ATTR` attribute.
+The filter also looks in the `ServerWebExchangeUtils.GATEWAY_SCHEME_PREFIX_ATTR` attribute to see if it equals `lb`.
+If so, the same rules apply.
+The following listing configures a `ReactiveLoadBalancerClientFilter`:
+
+.application.yml
+====
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: myRoute
+        uri: lb://service
+        predicates:
+        - Path=/service/**
+----
+====
+
+NOTE: By default, when a service instance cannot be found by the `ReactorLoadBalancer`, a `503` is returned.
+You can configure the gateway to return a `404` by setting `spring.cloud.gateway.loadbalancer.use404=true`.
+
+NOTE: The `isSecure` value of the `ServiceInstance` returned from the `ReactiveLoadBalancerClientFilter` overrides
+the scheme specified in the request made to the Gateway.
+For example, if the request comes into the Gateway over `HTTPS` but the `ServiceInstance` indicates it is not secure, the downstream request is made over `HTTP`.
+The opposite situation can also apply.
+However, if `GATEWAY_SCHEME_PREFIX_ATTR` is specified for the route in the Gateway configuration, the prefix is stripped and the resulting scheme from the route URL overrides the `ServiceInstance` configuration.

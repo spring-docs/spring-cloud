@@ -1,0 +1,5 @@
+include::page$attributes.adoc[]
+
+== Http timeouts configuration
+
+Http timeouts (response and connect) can be configured for all routes and overridden for each specific route.

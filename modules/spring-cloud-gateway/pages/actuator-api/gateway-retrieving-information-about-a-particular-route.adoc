@@ -1,0 +1,49 @@
+include::page$attributes.adoc[]
+[[gateway-retrieving-information-about-a-particular-route]]
+=== Retrieving Information about a Particular Route
+
+To retrieve information about a single route, make a `GET` request to `/actuator/gateway/routes/{id}` (for example, `/actuator/gateway/routes/first_route`).
+The resulting response is similar to the following:
+
+====
+----
+{
+  "id": "first_route",
+  "predicates": [{
+    "name": "Path",
+    "args": {"_genkey_0":"/first"}
+  }],
+  "filters": [],
+  "uri": "https://www.uri-destination.org",
+  "order": 0
+}]
+----
+====
+
+The following table describes the structure of the response:
+
+[cols="3,2,4"]
+|===
+| Path | Type | Description
+
+|`id`
+| String
+| The route ID.
+
+|`predicates`
+| Array
+| The collection of route predicates. Each item defines the name and the arguments of a given predicate.
+
+|`filters`
+| Array
+| The collection of filters applied to the route.
+
+|`uri`
+| String
+| The destination URI of the route.
+
+|`order`
+| Number
+| The route order.
+
+|===

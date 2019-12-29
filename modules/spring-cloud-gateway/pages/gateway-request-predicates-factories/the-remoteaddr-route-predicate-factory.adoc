@@ -1,0 +1,23 @@
+include::page$attributes.adoc[]
+
+=== The RemoteAddr Route Predicate Factory
+
+The RemoteAddr route predicate factory takes a list (min size 1) of CIDR-notation (IPv4 or IPv6) strings, such as `192.168.0.1/16` (where `192.168.0.1` is an IP address and `16` is a subnet mask).
+The following example configures a RemoteAddr route predicate:
+
+.application.yml
+====
+[source,yaml]
+----
+spring:
+  cloud:
+    gateway:
+      routes:
+      - id: remoteaddr_route
+        uri: https://example.org
+        predicates:
+        - RemoteAddr=192.168.1.1/24
+----
+====
+
+This route matches if the remote address of the request was, for example, `192.168.1.10`.

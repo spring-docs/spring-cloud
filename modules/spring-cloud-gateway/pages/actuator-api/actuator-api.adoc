@@ -1,0 +1,16 @@
+include::page$attributes.adoc[]
+
+== Actuator API
+
+The `/gateway` actuator endpoint lets you monitor and interact with a Spring Cloud Gateway application.
+To be remotely accessible, the endpoint has to be https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html#production-ready-endpoints-enabling-endpoints[enabled] and https://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html#production-ready-endpoints-exposing-endpoints[exposed over HTTP or JMX] in the application properties.
+The following listing shows how to do so:
+
+.application.properties
+====
+[source,properties]
+----
+management.endpoint.gateway.enabled=true # default value
+management.endpoints.web.exposure.include=gateway
+----
+====
