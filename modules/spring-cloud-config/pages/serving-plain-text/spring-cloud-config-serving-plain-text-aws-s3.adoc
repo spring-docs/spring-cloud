@@ -1,0 +1,9 @@
+include::page$attributes.adoc[]
+[[spring-cloud-config-serving-plain-text-aws-s3]]
+=== AWS S3
+
+To enable serving plain text for AWS s3, the Config Server application needs to include a dependency on Spring Cloud AWS.
+For details on how to set up that dependency, see the
+https://cloud.spring.io/spring-cloud-static/spring-cloud-aws/2.1.3.RELEASE/single/spring-cloud-aws.html#_spring_cloud_aws_maven_dependency_management[Spring Cloud AWS Reference Guide].
+Then you need to configure Spring Cloud AWS, as described in the
+https://cloud.spring.io/spring-cloud-static/spring-cloud-aws/2.1.3.RELEASE/single/spring-cloud-aws.html#_configuring_credentials[Spring Cloud AWS Reference Guide].

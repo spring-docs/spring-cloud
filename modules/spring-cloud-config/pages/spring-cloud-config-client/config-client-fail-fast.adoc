@@ -1,0 +1,7 @@
+include::page$attributes.adoc[]
+[[config-client-fail-fast]]
+=== Config Client Fail Fast
+
+In some cases, you may want to fail startup of a service if it cannot connect to the Config Server.
+If this is the desired behavior, set the bootstrap configuration property `spring.cloud.config.fail-fast=true` to make the client halt with an Exception.
+

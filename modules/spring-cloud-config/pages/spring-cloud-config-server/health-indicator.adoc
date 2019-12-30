@@ -1,0 +1,25 @@
+include::page$attributes.adoc[]
+
+=== Health Indicator
+
+Config Server comes with a Health Indicator that checks whether the configured `EnvironmentRepository` is working.
+By default, it asks the `EnvironmentRepository` for an application named `app`, the `default` profile, and the default label provided by the `EnvironmentRepository` implementation.
+
+You can configure the Health Indicator to check more applications along with custom profiles and custom labels, as shown in the following example:
+
+[source,yaml]
+----
+spring:
+  cloud:
+    config:
+      server:
+        health:
+          repositories:
+            myservice:
+              label: mylabel
+            myservice-dev:
+              name: myservice
+              profiles: development
+----
+
+You can disable the Health Indicator by setting `spring.cloud.config.server.health.enabled=false`.

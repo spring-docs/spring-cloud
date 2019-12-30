@@ -1,0 +1,67 @@
+include::page$attributes.adoc[]
+[[spring-cloud-config-serving-plain-text-git-svn-native-backends]]
+=== Git, SVN, and Native Backends
+
+Consider the following example for a GIT or SVN repository or a native backend:
+
+====
+[source]
+----
+application.yml
+nginx.conf
+----
+====
+
+The `nginx.conf` might resemble the following listing:
+
+====
+[source]
+----
+server {
+    listen              80;
+    server_name         ${nginx.server.name};
+}
+----
+====
+
+`application.yml` might resemble the following listing:
+
+====
+[source,yaml]
+----
+nginx:
+  server:
+    name: example.com
+---
+spring:
+  profiles: development
+nginx:
+  server:
+    name: develop.com
+----
+====
+
+The `/sample/default/master/nginx.conf` resource might be as follows:
+
+====
+[source]
+----
+server {
+    listen              80;
+    server_name         example.com;
+}
+----
+====
+
+`/sample/development/master/nginx.conf` might be as follows:
+
+====
+[source]
+----
+server {
+    listen              80;
+    server_name         develop.com;
+}
+----
+====
+

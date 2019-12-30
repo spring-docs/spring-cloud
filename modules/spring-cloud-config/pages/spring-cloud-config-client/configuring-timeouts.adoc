@@ -1,0 +1,8 @@
+include::page$attributes.adoc[]
+
+=== Configuring Timeouts
+
+If you want to configure timeout thresholds:
+
+* Read timeouts can be configured by using the property `spring.cloud.config.request-read-timeout`.
+* Connection timeouts can be configured by using the property `spring.cloud.config.request-connect-timeout`.

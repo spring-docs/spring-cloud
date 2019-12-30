@@ -1,0 +1,18 @@
+include::page$attributes.adoc[]
+
+=== Nested Keys In Vault
+
+Vault supports the ability to nest keys in a value stored in Vault, as shown in the following example:
+
+`echo -n '{"appA": {"secret": "appAsecret"}, "bar": "baz"}' | vault write secret/myapp -`
+
+This command writes a JSON object to your Vault.
+To access these values in Spring, you would use the traditional dot(`.`) annotation, as shown in the following example
+
+[source,java]
+----
+@Value("${appA.secret}")
+String name = "World";
+----
+
+The preceding code would sets the value of the `name` variable to `appAsecret`.

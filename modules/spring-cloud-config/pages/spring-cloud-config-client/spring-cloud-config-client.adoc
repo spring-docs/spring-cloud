@@ -1,0 +1,7 @@
+include::page$attributes.adoc[]
+
+== Spring Cloud Config Client
+
+A Spring Boot application can take immediate advantage of the Spring Config Server (or other external property sources provided by the application developer).
+It also picks up some additional useful features related to `Environment` change events.
+
