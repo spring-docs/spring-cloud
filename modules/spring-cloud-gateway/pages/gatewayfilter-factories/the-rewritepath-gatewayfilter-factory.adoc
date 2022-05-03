@@ -19,7 +19,7 @@ spring:
         predicates:
         - Path=/foo/**
         filters:
-        - RewritePath=/red(?<segment>/?.*), $\{segment}
+        - RewritePath=/red(?<segment>/?.*), /$\{segment}
 ----
 ====
 
